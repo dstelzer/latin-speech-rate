@@ -10,10 +10,17 @@ import bz2
 
 from tqdm import tqdm
 
-# Current results for English, using (True, False, True, CobW, SAM, None): 9.42676, 6.98057
-# Current results for German, using (True, False, True, MannW, SAM, None): 
+# Current results for English: 9.42676, 6.98057
+# Goal: 9.51, 7.09
+# (True, False, True, CobW, SAM, None, 0)
+# Using CobW instead of Cob because it matches "17M tokens"
 
-LOG = False
+# Current results for German: 9.27457, 6.07757
+# Goal: 9.30, 6.08
+# (True, False, True, Mann, SAM, None, 0)
+# Using Mann instead of MannW because it matches "5M tokens"
+
+LOG = True
 
 BOUNDARY = '␣' # Something that doesn't appear in the SAMPA variant CELEX uses
 DIVIDER = '-' # The symbol used to separate syllables
@@ -49,8 +56,7 @@ class CelexAnalysis:
 		else: return word['PhonSyl'+self.phon]
 	
 	def select_count(self, word):
-	#	return int(word[self.freq]) # self.freq is the name of the metric we're using for frequency: Cob (COBUILD total), CobW (COBUILD Written), or CobS (COBUILD spoken).
-		f = int(word[self.freq])
+		f = int(word[self.freq]) # self.freq is the name of the metric we're using for frequency: Cob (COBUILD total), CobW (COBUILD Written), or CobS (COBUILD spoken).
 		return f + self.smoothing
 	
 	def split_bigrams(self, word):
@@ -113,7 +119,6 @@ class CelexAnalysis:
 		return self.bigrams[bigram] / self.total_bigrams
 	
 	def unigram_probability(self, unigram):
-	#	if unigram == BOUNDARY: return 1
 		return self.unigrams[unigram] / self.total_unigrams
 	
 	def context_probability(self, context):
@@ -135,14 +140,9 @@ class CelexAnalysis:
 			if y is None: return self.context_probability(x)
 			else: return self.bigram_probability((x,y))
 		
-	#	for x,y in tqdm(product(self.unigrams, repeat=2), total=len(self.unigrams)**2):
-	#	printed_so_far = set()
 		for x,y in tqdm(self.bigrams, leave=False):
 			if p(x,y) == 0 or p(x) == 0: continue
 			sum += p(x,y) * log2( p(x,y) / p(x) )
-	#		if x not in printed_so_far:
-	#			printed_so_far.add(x)
-	#			print(f'\t\tp({x}) = {p(x)}')
 		
 		return -sum
 	
@@ -161,8 +161,8 @@ class CelexAnalysis:
 
 if __name__ == '__main__':
 	input()
-	for params in product([True], [False], [True], ['CobW'], ['SAM'], [5000,10000,20000,30000,40000,50000,60000,70000,80000,90000,None], [0]):
-#	for params in product([True], [False], [True], ['Mann','MannW'], ['SAM'], [None], [0,1]):
+#	for params in product([True], [False], [True], ['CobW'], ['SAM'], [5000,10000,20000,30000,40000,50000,60000,70000,80000,90000,None], [0]):
+	for params in product([True], [False], [True], ['CobW'], ['SAM'], [None], [0]):
 		analyzer = CelexAnalysis(*params)
 		analyzer.load_corpus('data/english.pickle.bz2')
 		analyzer.do_things()
