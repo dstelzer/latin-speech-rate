@@ -20,6 +20,10 @@ from tqdm import tqdm
 # (True, False, True, Mann, SAM, None, 0)
 # Using Mann instead of MannW because it matches "5M tokens"
 
+# EDIT: Using Dr Oh's newly-provided data, German results match exactly!
+# True, False, True, Word Mann, DISC, None, 0
+# 9.303958490082131 6.082567690505002
+
 LOG = True
 
 BOUNDARY = '␣' # Something that doesn't appear in the SAMPA variant CELEX uses
@@ -162,7 +166,7 @@ class CelexAnalysis:
 if __name__ == '__main__':
 	input()
 #	for params in product([True], [False], [True], ['CobW'], ['SAM'], [5000,10000,20000,30000,40000,50000,60000,70000,80000,90000,None], [0]):
-	for params in product([True], [False], [True], ['CobW'], ['SAM'], [None], [0]):
+	for params in product([True], [False], [True], ['CobW'], ['DISC'], [None], [0]):
 		analyzer = CelexAnalysis(*params)
 		analyzer.load_corpus('data/english.pickle.bz2')
 		analyzer.do_things()

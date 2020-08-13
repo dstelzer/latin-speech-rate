@@ -12,9 +12,18 @@ params = {
 	'quoting' : csv.QUOTE_NONE, # Ensure it doesn't misinterpret quote marks
 }
 
+params2 = {
+	'delimiter' : '\t',
+	'escapechar' : '\x1b',
+	'strict' : True,
+	'quoting' : csv.QUOTE_NONE,
+}
+
 INFILE = 'data'
-OUTFILE = 'german'
-COUNTER = 'Mann'
+OUTFILE = 'english'
+COUNTER = 'Cob'
+
+alphabetic = 'abcdefghijklmnopqrstuvwxyz'
 
 with open(f'{INFILE}.csv', 'r', newline='') as inf:
 	read = csv.DictReader(inf, **params)
@@ -22,8 +31,9 @@ with open(f'{INFILE}.csv', 'r', newline='') as inf:
 	count = 0
 	for row in read: # This could be a comprehension but that makes it hard to get both `count` and the filtered `data`
 	#	if int(row[COUNTER]): data.append(dict(row))
-		data.append(dict(row))
 		count += 1
+	#	if any(c not in alphabetic for c in row['Word'].lower()): continue # Oh's thesis indicates that words with nonalphabetics were removed
+		data.append(dict(row))
 	print(data[0])
 	with bz2.open(f'{OUTFILE}.pickle.bz2', 'wb') as outf:
 		pickle.dump(data, outf)

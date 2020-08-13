@@ -1,0 +1,15 @@
+	BP, BT, BC, BS, BF → PP, PT, PC, PS, PF
+	DP, DT, DC, DS, DF → TP, TT, TC, TS, TF
+	QUU, NGUU → CU, NGU
+	QU, NGUv → Ć, NǴv
+	X → CS
+X	PH, TH, CH → P T C
+X	RH → R
+X	#Z, vZ → S, vSS
+X	Y, Ȳ → I, Ī (U, Ū?)
+X	BF, BM, BG, BC → FF, MM, GG, CC
+X	[D assimilation]
+X	AEv → AJv
+	vJv → vJJv
+	[CON|IN|AD|AB|SUB|OB|DIS]IC[I|ERE] → []JIC[]
+X	H → ∅
