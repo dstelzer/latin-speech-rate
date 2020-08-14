@@ -4,6 +4,8 @@ from collections import Counter
 from math import log2
 from itertools import product
 import random
+import pickle
+import bz2
 
 from tqdm import tqdm
 
@@ -12,27 +14,36 @@ LOG = True
 BOUNDARY = '␣' # Something that doesn't appear in any transcriptions
 DIVIDER = '-' # The symbol used to separate syllables
 
-class Analysis:
+class Analysis: # Simplest version of the analysis, takes a Counter mapping words to counts
 	
-	def __init__(self, prefix, suffix): # Configuration parameters
-		self.prefix = prefix
-		self.suffix = suffix
+	def __init__(self): # Configuration parameters go here
+		pass
 	
 	def load_corpus(self, fn):
-		raise NotImplemented
+		opener = bz2.open if str(fn).endswith('bz2') else open # Make sure we open the file the right way
+		with opener(fn, 'rb') as f:
+			corpus = pickle.load(f)
+		if LOG: print(f'Loaded {len(corpus)} words from {fn}')
+		
+		types = len(corpus)
+		tokens = sum(corpus.values())
+		if LOG: print(f'Types: {types} Tokens: {tokens}')
+		self.tokens = tokens
+		
+		self.corpus = {k:(k,v) for (k,v) in corpus.items()}
 	
 	def select_form(self, word):
-		raise NotImplemented
+		return word[0]
 	
 	def select_count(self, word):
-		raise NotImplemented
+		return word[1]
 	
 	def split_bigrams(self, word):
 		form = self.select_form(word)
 		if not form: return
 		
-		if self.prefix: form = BOUNDARY + DIVIDER + form
-		if self.suffix: form = form + DIVIDER + BOUNDARY
+		# Use prefix, but not suffix
+		form = BOUNDARY + DIVIDER + form
 		
 		syls = form.split(DIVIDER)
 		for a,b in zip(syls, syls[1:]):
