@@ -4,9 +4,6 @@ from collections import Counter
 from math import log2
 from itertools import product
 import random
-# Need these for reading the compressed data file
-import pickle
-import bz2
 
 from tqdm import tqdm
 
@@ -26,21 +23,18 @@ from analyze import Analysis
 # True, False, True, Word Mann, DISC, None, 0
 # 9.303958490082131 6.082567690505002
 
-LOG = True
-
 BOUNDARY = '␣' # Something that doesn't appear in the SAMPA variant CELEX uses
 DIVIDER = '-' # The symbol used to separate syllables
 
 class CelexAnalysis(Analysis):
 	
-	def __init__(self, prefix, suffix, stress, freq='Cob', phon='SAM', csize=None, smoothing=0): # Configuration parameters
-		self.prefix = prefix
-		self.suffix = suffix
+	def __init__(self, stress, freq='Cob', phon='SAM', csize=None, smoothing=0, LOG=True): # Configuration parameters
 		self.stress = stress
 		self.freq = freq
 		self.phon = phon
 		self.csize = csize
 		self.smoothing = smoothing
+		self.LOG = LOG
 	
 	def reduce_corpus(self, size): # HACK clean this up
 		population = [word['IdNum'] for word in self.corpus]
@@ -52,7 +46,8 @@ class CelexAnalysis(Analysis):
 			new_corpus[choice][self.freq] += 1
 		
 		self.corpus = list(new_corpus.values())
-		if LOG: print(f'Created reduced corpus of size {sum(word[self.freq] for word in self.corpus)}')
+		self.special_loading_code()
+		if self.LOG: print(f'Created reduced corpus of size {sum(word[self.freq] for word in self.corpus)}')
 	
 	def autoreduce(self):
 		if self.csize is not None: self.reduce_corpus(self.csize)
@@ -65,16 +60,11 @@ class CelexAnalysis(Analysis):
 		f = int(word[self.freq]) # self.freq is the name of the metric we're using for frequency: Cob (COBUILD total), CobW (COBUILD Written), or CobS (COBUILD spoken).
 		return f + self.smoothing
 	
-	def load_corpus(self, fn):
-		opener = bz2.open if str(fn).endswith('bz2') else open # Make sure we open the file the right way
-		with opener(fn, 'rb') as f:
-			self.corpus = pickle.load(f)
-		if LOG: print(f'Loaded {len(self.corpus)} words from {fn}')
-		
-		types = len(self.corpus)
-		tokens = sum(int(word[self.freq]) for word in self.corpus)
-		if LOG: print(f'Types: {types} Tokens: {tokens}')
-		self.tokens = tokens
+	def special_loading_code(self): # Preprocess the corpus into the form we want
+		new = Counter()
+		for word in self.corpus: # Have to do it this way instead of a dict comprehension to account for homophones (thus add, don't replace)
+			new[self.select_form(word)] += self.select_count(word)
+		self.corpus = new
 	
 	def do_things(self):
 		self.autoreduce()
@@ -84,15 +74,12 @@ class CelexAnalysis(Analysis):
 		e1 = self.entropy1()
 		e2 = self.entropy2()
 		
-		def b(r): return '#' if r else '-'
-		
-		print(f'Results ({b(self.prefix)}{b(self.suffix)}{b(self.stress)} {self.freq} {self.csize} {self.smoothing}):\n\tSE: {e1}\n\tID: {e2}')
-	#	print(e1)
+		print(f'Results ({self.stress} {self.freq} {self.csize} {self.smoothing}):\n\tSE: {e1}\n\tID: {e2}')
 
 if __name__ == '__main__':
 	input()
-#	for params in product([True], [False], [True], ['CobW'], ['SAM'], [5000,10000,20000,30000,40000,50000,60000,70000,80000,90000,None], [0]):
-	for params in product([True], [False], [True], ['CobW'], ['DISC'], [None], [0]):
+#	for params in product([True], ['CobW'], ['SAM'], [5000,10000,20000,30000,40000,50000,60000,70000,80000,90000,None], [0], [True]):
+	for params in product([True], ['CobW'], ['DISC'], [None], [0], [True]):
 		analyzer = CelexAnalysis(*params)
 		analyzer.load_corpus('data/english.pickle.bz2')
 		analyzer.do_things()
