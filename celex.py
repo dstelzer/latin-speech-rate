@@ -23,34 +23,13 @@ from analyze import Analysis
 # True, False, True, Word Mann, DISC, None, 0
 # 9.303958490082131 6.082567690505002
 
-BOUNDARY = '␣' # Something that doesn't appear in the SAMPA variant CELEX uses
-DIVIDER = '-' # The symbol used to separate syllables
-
 class CelexAnalysis(Analysis):
 	
-	def __init__(self, stress, freq='Cob', phon='SAM', csize=None, smoothing=0, LOG=True): # Configuration parameters
+	def __init__(self, stress, freq='Cob', phon='SAM', *args, **kwargs): # Configuration parameters
+		super().__init__(*args, **kwargs)
 		self.stress = stress
 		self.freq = freq
 		self.phon = phon
-		self.csize = csize
-		self.smoothing = smoothing
-		self.LOG = LOG
-	
-	def reduce_corpus(self, size): # HACK clean this up
-		population = [word['IdNum'] for word in self.corpus]
-		weights = [int(word[self.freq])+1 for word in self.corpus]
-		new_corpus = { word['IdNum']:word.copy() for word in self.corpus }
-		for word in new_corpus.values(): word[self.freq] = 0
-		
-		for choice in random.choices(population, weights, k=size):
-			new_corpus[choice][self.freq] += 1
-		
-		self.corpus = list(new_corpus.values())
-		self.special_loading_code()
-		if self.LOG: print(f'Created reduced corpus of size {sum(word[self.freq] for word in self.corpus)}')
-	
-	def autoreduce(self):
-		if self.csize is not None: self.reduce_corpus(self.csize)
 	
 	def select_form(self, word): # Return either a phonological form that includes stress, or one that does not.
 		if self.stress: return word['PhonStrs'+self.phon]
@@ -62,25 +41,16 @@ class CelexAnalysis(Analysis):
 	
 	def special_loading_code(self): # Preprocess the corpus into the form we want
 		new = Counter()
+		word = self.corpus[0]
+		print('Viable tags:', ' '.join(word.keys()))
 		for word in self.corpus: # Have to do it this way instead of a dict comprehension to account for homophones (thus add, don't replace)
 			new[self.select_form(word)] += self.select_count(word)
 		self.corpus = new
-	
-	def do_things(self):
-		self.autoreduce()
-		self.count_unigrams()
-		self.count_bigrams()
-		self.count_contexts()
-		e1 = self.entropy1()
-		e2 = self.entropy2()
-		
-		print(f'Results ({self.stress} {self.freq} {self.csize} {self.smoothing}):\n\tSE: {e1}\n\tID: {e2}')
 
 if __name__ == '__main__':
 	input()
-#	for params in product([True], ['CobW'], ['SAM'], [5000,10000,20000,30000,40000,50000,60000,70000,80000,90000,None], [0], [True]):
-	for params in product([True], ['CobW'], ['DISC'], [None], [0], [True]):
-		analyzer = CelexAnalysis(*params)
-		analyzer.load_corpus('data/english.pickle.bz2')
-		analyzer.do_things()
-		print()
+	analyzer = CelexAnalysis(stress=True, freq='Word Mann', phon='DISC', divider=' ')
+	analyzer.load_corpus('data/german.pickle.bz2')
+	e1, e2 = analyzer.do_things()
+	print(e1)
+	print(e2)
