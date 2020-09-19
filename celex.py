@@ -25,7 +25,7 @@ from analyze import Analysis
 
 class CelexAnalysis(Analysis):
 	
-	def __init__(self, stress, freq='Cob', phon='SAM', *args, **kwargs): # Configuration parameters
+	def __init__(self, stress, freq, phon, *args, **kwargs): # Configuration parameters
 		super().__init__(*args, **kwargs)
 		self.stress = stress
 		self.freq = freq
