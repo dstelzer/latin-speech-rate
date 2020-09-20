@@ -11,16 +11,16 @@ from analyze import Analysis
 
 # Current results for English: 9.42676, 6.98057
 # Goal: 9.51, 7.09
-# (True, False, True, CobW, SAM, None, 0)
+# (True, CobW, SAM, None, 0)
 # Using CobW instead of Cob because it matches "17M tokens"
 
 # Current results for German: 9.27457, 6.07757
 # Goal: 9.30, 6.08
-# (True, False, True, Mann, SAM, None, 0)
+# (True, Mann, SAM, None, 0)
 # Using Mann instead of MannW because it matches "5M tokens"
 
 # EDIT: Using Dr Oh's newly-provided data, German results match exactly!
-# True, False, True, Word Mann, DISC, None, 0
+# True, Word Mann, DISC, None, 0
 # 9.303958490082131 6.082567690505002
 
 class CelexAnalysis(Analysis):
@@ -47,10 +47,26 @@ class CelexAnalysis(Analysis):
 			new[self.select_form(word)] += self.select_count(word)
 		self.corpus = new
 
-if __name__ == '__main__':
+def size_test():
+	import matplotlib.pyplot as plt
+	
+	input()
+	analyzer = CelexAnalysis(stress=True, freq='CobW', phon='DISC', log=False)
+	analyzer.load_corpus('data/english.pickle.bz2')
+	data = analyzer.calculate_reduced_e2(1)
+	print(data)
+	xs = [d[0] for d in data]
+	ys = [d[1] for d in data]
+	plt.scatter(xs, ys)
+	plt.show()
+
+def basic_analysis():
 	input()
 	analyzer = CelexAnalysis(stress=True, freq='Word Mann', phon='DISC', divider=' ')
 	analyzer.load_corpus('data/german.pickle.bz2')
 	e1, e2 = analyzer.do_things()
 	print(e1)
 	print(e2)
+
+if __name__ == '__main__':
+	size_test()
