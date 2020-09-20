@@ -34,18 +34,18 @@ class Analysis: # Simplest version of the analysis, takes a Counter mapping word
 		tokens = sum(self.corpus.values())
 		if self.log: print(f'Types: {types} Tokens: {tokens}')
 		self.tokens = tokens
+		
+		self.original_corpus = self.corpus # For reduction experiments
+	
+	def inflate_corpus(self): # Call this once before doing any reductions
+		self.inflated_corpus = []
+		for word, count in self.corpus.items():
+			for _ in range(count):
+				self.inflated_corpus.append(word)
 	
 	def reduce_corpus(self, desired_size=None, reduce_by=None):
 		
-		self.original_corpus = self.corpus
-		self.corpus = self.corpus.copy()
-		
-		def get_random_datapoint():
-			# Choose a word at random, weighted by frequency
-			# (So effectively choosing a random data point)
-			return random.choices(list(self.corpus.keys()), list(self.corpus.values()))[0]
-			# The [0] is needed because random.choices, by default,
-			# returns a list containing a single element.
+		self.corpus = Counter(self.corpus) # HACK TODO FIX
 		
 		current_size = sum(self.corpus.values())
 		
@@ -61,66 +61,24 @@ class Analysis: # Simplest version of the analysis, takes a Counter mapping word
 		if desired_size == current_size:
 			return # No changes needed
 		
-		additive = desired_size < reduce_by # If the desired size is less than the reduction amount, we can speed things up considerably by putting `desired_size` values into a new corpus rather than taking `reduce_by` values out of the existing one
+		invert = (reduce_by < desired_size) # Minor efficiency improvement, see below
+		sample_size = reduce_by if invert else desired_size
 		
-		if additive:
-			new_corpus = Counter()
-			count = desired_size
+		raw_sample = random.sample(self.inflated_corpus, sample_size)
+		
+		sample = Counter()
+		for word in raw_sample:
+			sample[word] += 1
+		
+		if invert:
+			self.corpus = self.corpus - sample # For efficiency, it's sometimes better to select the data points to _remove_ instead of the ones to keep.
 		else:
-			count = reduce_by
-		
-		for _ in trange(count):
-			key = get_random_datapoint() # Choose a data point
-			self.corpus[key] -= 1 # And trash it
-			if additive: new_corpus[key] += 1
-		
-		if additive: self.corpus = new_corpus
-		
-		if self.log: print(f'Created reduced corpus of size {sum(self.corpus.values())}')
-	
-	def reduce_corpus_2(self, desired_size=None, reduce_by=None):
-		
-		self.original_corpus = self.corpus
-		
-		current_size = sum(self.corpus.values())
-		
-		if (reduce_by is None) == (desired_size is None): # == is xnor for bools
-			raise ValueError('Must supply exactly one of desired_size or reduced_by')
-		if reduce_by is None: reduce_by = current_size - desired_size # How many to throw away
-		else: desired_size = current_size - reduce_by # How many to keep
-		
-		if desired_size > current_size:
-			raise ValueError('Asked for a larger corpus than is available', desired_size, current_size)
-		if desired_size <= 0:
-			raise ValueError(desired_size)
-		if desired_size == current_size:
-			return # No changes needed
-		
-		word_to_id, id_to_word = dict(), dict()
-		for i, word in enumerate(self.corpus):
-			word_to_id[word] = i
-			id_to_word[i] = word
-		
-		extended_corpus = []
-		print('Making extended corpus')
-		for word, count in tqdm(self.corpus.items(), leave=False):
-			id = word_to_id[word]
-			for _ in range(count):
-				extended_corpus.append(id)
-		
-		print('Selecting from extended corpus')
-		choice = random.sample(extended_corpus, desired_size)
-		
-		print('Creating new corpus')
-		new_corpus = Counter()
-		for id in choice:
-			new_corpus[id_to_word[id]] += 1
-		
-		self.corpus = new_corpus
+			self.corpus = sample
 		
 		if self.log: print(f'Created reduced corpus of size {sum(self.corpus.values())}')
 	
 	def autoreduce(self):
+		self.inflate_corpus()
 		if self.csize is not None: self.reduce_corpus(desired_size = self.csize)
 	
 	def unreduce(self):
@@ -206,12 +164,14 @@ class Analysis: # Simplest version of the analysis, takes a Counter mapping word
 		e2 = self.entropy2()
 		return e1, e2
 	
-	def calculate_reduced_e2(self, n=1):
-		xs = [5000, 10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000]
+	def calculate_reduced_e2(self, n=1, step=100_000, top=None):
+		if top is None: top = self.tokens
+		xs = list(range(step, top, step))
 		data = []
+		self.inflate_corpus()
 		for x in tqdm(xs):
-			for _ in trange(n):
-				self.reduce_corpus_2(desired_size=x)
+			for _ in tqdm(range(n), leave=False):
+				self.reduce_corpus(desired_size=x)
 				self.count_unigrams()
 				self.count_bigrams()
 				self.count_contexts()
@@ -220,8 +180,24 @@ class Analysis: # Simplest version of the analysis, takes a Counter mapping word
 				self.unreduce()
 		return data
 
-if __name__ == '__main__':
+
+def size_test():
+	import matplotlib.pyplot as plt
+	
+	input()
+	analyzer = Analysis(log=False)
+	analyzer.load_corpus('data/latin/phi5.pickle.bz2')
+	data = analyzer.calculate_reduced_e2(step=10_000, n=2)
+	print(data)
+	xs = [d[0] for d in data]
+	ys = [d[1] for d in data]
+	plt.scatter(xs, ys)
+	plt.show()
+
+def simple():
 	an = Analysis()
 	an.load_corpus('data/latin/phi5.pickle.bz2')
 	e1, e2 = an.do_things()
 	print(f'SE: {e1}\nID: {e2}')
+
+if __name__ == '__main__': size_test()

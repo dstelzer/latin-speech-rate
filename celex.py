@@ -11,17 +11,19 @@ from analyze import Analysis
 
 # Current results for English: 9.42676, 6.98057
 # Goal: 9.51, 7.09
-# (True, CobW, SAM, None, 0)
+# (True, CobW, DISC)
 # Using CobW instead of Cob because it matches "17M tokens"
+ENGLISH = {'stress':True, 'freq':'CobW', 'phon':'DISC'}
 
 # Current results for German: 9.27457, 6.07757
 # Goal: 9.30, 6.08
-# (True, Mann, SAM, None, 0)
+# (True, Mann, SAM)
 # Using Mann instead of MannW because it matches "5M tokens"
 
 # EDIT: Using Dr Oh's newly-provided data, German results match exactly!
-# True, Word Mann, DISC, None, 0
+# True, Word Mann, DISC
 # 9.303958490082131 6.082567690505002
+GERMAN = {'stress':True, 'freq':'Word Mann', 'phon':'DISC', 'divider':' '}
 
 class CelexAnalysis(Analysis):
 	
@@ -51,9 +53,9 @@ def size_test():
 	import matplotlib.pyplot as plt
 	
 	input()
-	analyzer = CelexAnalysis(stress=True, freq='CobW', phon='DISC', log=False)
-	analyzer.load_corpus('data/english.pickle.bz2')
-	data = analyzer.calculate_reduced_e2(1)
+	analyzer = CelexAnalysis(log=False, **GERMAN)
+	analyzer.load_corpus('data/german.pickle.bz2')
+	data = analyzer.calculate_reduced_e2(step=100_000, n=1)
 	print(data)
 	xs = [d[0] for d in data]
 	ys = [d[1] for d in data]
@@ -62,7 +64,7 @@ def size_test():
 
 def basic_analysis():
 	input()
-	analyzer = CelexAnalysis(stress=True, freq='Word Mann', phon='DISC', divider=' ')
+	analyzer = CelexAnalysis(log=False, **GERMAN)
 	analyzer.load_corpus('data/german.pickle.bz2')
 	e1, e2 = analyzer.do_things()
 	print(e1)
