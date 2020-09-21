@@ -50,17 +50,10 @@ class CelexAnalysis(Analysis):
 		self.corpus = new
 
 def size_test():
-	import matplotlib.pyplot as plt
-	
 	input()
-	analyzer = CelexAnalysis(log=False, **GERMAN)
-	analyzer.load_corpus('data/german.pickle.bz2')
-	data = analyzer.calculate_reduced_e2(step=100_000, n=1)
-	print(data)
-	xs = [d[0] for d in data]
-	ys = [d[1] for d in data]
-	plt.scatter(xs, ys)
-	plt.show()
+	analyzer = CelexAnalysis(log=False, **ENGLISH)
+	analyzer.load_corpus('data/english.pickle.bz2')
+	analyzer.calculate_reduced_e2(step=100_000, n=1, save='math/english_filled.pickle.bz2', extra_xs=[1000,5000,10000,50000])
 
 def basic_analysis():
 	input()

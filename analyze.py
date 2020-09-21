@@ -61,7 +61,7 @@ class Analysis: # Simplest version of the analysis, takes a Counter mapping word
 		if desired_size == current_size:
 			return # No changes needed
 		
-		invert = (reduce_by < desired_size) # Minor efficiency improvement, see below
+		invert = (reduce_by < desired_size) # For efficiency, it's sometimes better to select the data points to _remove_ instead of the ones to keep.
 		sample_size = reduce_by if invert else desired_size
 		
 		raw_sample = random.sample(self.inflated_corpus, sample_size)
@@ -71,7 +71,7 @@ class Analysis: # Simplest version of the analysis, takes a Counter mapping word
 			sample[word] += 1
 		
 		if invert:
-			self.corpus = self.corpus - sample # For efficiency, it's sometimes better to select the data points to _remove_ instead of the ones to keep.
+			self.corpus = self.corpus - sample 
 		else:
 			self.corpus = sample
 		
@@ -164,9 +164,9 @@ class Analysis: # Simplest version of the analysis, takes a Counter mapping word
 		e2 = self.entropy2()
 		return e1, e2
 	
-	def calculate_reduced_e2(self, n=1, step=100_000, top=None):
+	def calculate_reduced_e2(self, n=1, step=100_000, top=None, save=None, extra_xs=[]):
 		if top is None: top = self.tokens
-		xs = list(range(step, top, step))
+		xs = list(range(step, top, step)) + extra_xs
 		data = []
 		self.inflate_corpus()
 		for x in tqdm(xs):
@@ -178,21 +178,19 @@ class Analysis: # Simplest version of the analysis, takes a Counter mapping word
 				y = self.entropy2()
 				data.append((x,y))
 				self.unreduce()
+		
+		if save is not None: # Save to a file
+			opener = bz2.open if str(save).endswith('bz2') else open # Make sure we open the file the right way
+			with opener(save, 'wb') as f:
+				pickle.dump(data, f)
+		
 		return data
 
-
 def size_test():
-	import matplotlib.pyplot as plt
-	
 	input()
 	analyzer = Analysis(log=False)
 	analyzer.load_corpus('data/latin/phi5.pickle.bz2')
-	data = analyzer.calculate_reduced_e2(step=10_000, n=2)
-	print(data)
-	xs = [d[0] for d in data]
-	ys = [d[1] for d in data]
-	plt.scatter(xs, ys)
-	plt.show()
+	analyzer.calculate_reduced_e2(step=10_000, n=1, save='math/latin.pickle.bz2')
 
 def simple():
 	an = Analysis()
