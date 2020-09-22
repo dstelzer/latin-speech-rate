@@ -7,6 +7,8 @@ import random
 import pickle
 import bz2
 
+import numpy as np
+
 from tqdm import tqdm, trange
 
 class Analysis: # Simplest version of the analysis, takes a Counter mapping words to counts
@@ -43,7 +45,7 @@ class Analysis: # Simplest version of the analysis, takes a Counter mapping word
 			for _ in range(count):
 				self.inflated_corpus.append(word)
 	
-	def reduce_corpus(self, desired_size=None, reduce_by=None):
+	def reduce_corpus(self, desired_size=None, reduce_by=None, bootstrap=False):
 		
 		self.corpus = Counter(self.corpus) # HACK TODO FIX
 		
@@ -54,17 +56,22 @@ class Analysis: # Simplest version of the analysis, takes a Counter mapping word
 		if reduce_by is None: reduce_by = current_size - desired_size # How many to throw away
 		else: desired_size = current_size - reduce_by # How many to keep
 		
-		if desired_size > current_size:
+		if desired_size > current_size and not bootstrap:
 			raise ValueError('Asked for a larger corpus than is available', desired_size, current_size)
+		if desired_size == current_size and not bootstrap:
+			return # No changes needed
 		if desired_size <= 0:
 			raise ValueError(desired_size)
-		if desired_size == current_size:
-			return # No changes needed
 		
-		invert = (reduce_by < desired_size) # For efficiency, it's sometimes better to select the data points to _remove_ instead of the ones to keep.
+		invert = (reduce_by < desired_size and not bootstrap) # For efficiency, it's sometimes better to select the data points to _remove_ instead of the ones to keep.
 		sample_size = reduce_by if invert else desired_size
 		
-		raw_sample = random.sample(self.inflated_corpus, sample_size)
+		if bootstrap:
+			words = list(self.corpus.keys())
+			weights = [self.corpus[w] for w in words]
+			raw_sample = random.choices(words, weights, k=sample_size)
+		else:
+			raw_sample = random.sample(self.inflated_corpus, sample_size)
 		
 		sample = Counter()
 		for word in raw_sample:
@@ -164,14 +171,19 @@ class Analysis: # Simplest version of the analysis, takes a Counter mapping word
 		e2 = self.entropy2()
 		return e1, e2
 	
-	def calculate_reduced_e2(self, n=1, step=100_000, top=None, save=None, extra_xs=[]):
+	def calculate_reduced_e2(self, n=1, bottom=5_000, top=None, npts=100, save=None, logscale=True, bootstrap=False):
 		if top is None: top = self.tokens
-		xs = list(range(step, top, step)) + extra_xs
+		if logscale:
+			lb = np.log10(bottom)
+			lt = np.log10(top)
+			xs = np.rint(np.logspace(lb, lt, npts)).astype(int) # Log space rounded to integers
+		else:
+			xs = np.rint(np.linspace(bottom, top, npts)).astype(int)
 		data = []
 		self.inflate_corpus()
 		for x in tqdm(xs):
 			for _ in tqdm(range(n), leave=False):
-				self.reduce_corpus(desired_size=x)
+				self.reduce_corpus(desired_size=x, bootstrap=bootstrap)
 				self.count_unigrams()
 				self.count_bigrams()
 				self.count_contexts()
@@ -185,12 +197,38 @@ class Analysis: # Simplest version of the analysis, takes a Counter mapping word
 				pickle.dump(data, f)
 		
 		return data
+	
+	def bootstrap_for_confidence(self, n, save=None):
+		self.inflate_corpus()
+		x = self.tokens
+		data = []
+		for _ in trange(n):
+			self.reduce_corpus(desired_size=x, bootstrap=True)
+			self.count_unigrams()
+			self.count_bigrams()
+			self.count_contexts()
+			y = self.entropy2()
+			data.append((x,y))
+		
+		if save is not None: # Save to a file
+			opener = bz2.open if str(save).endswith('bz2') else open # Make sure we open the file the right way
+			with opener(save, 'wb') as f:
+				pickle.dump(data, f)
+		
+		return data
+
+def confidence_test():
+	input()
+	analyzer = Analysis(log=False)
+	analyzer.load_corpus('data/latin/phi5.pickle.bz2')
+	analyzer.bootstrap_for_confidence(n=25, save='math/latin_confidence.pickle.bz2')
 
 def size_test():
 	input()
 	analyzer = Analysis(log=False)
 	analyzer.load_corpus('data/latin/phi5.pickle.bz2')
-	analyzer.calculate_reduced_e2(step=10_000, n=1, save='math/latin.pickle.bz2')
+	top = analyzer.tokens * 100
+	analyzer.calculate_reduced_e2(logscale=True, npts=200, n=2, save='math/latin_bootstrap.pickle.bz2', bootstrap=True, top=top)
 
 def simple():
 	an = Analysis()
@@ -198,4 +236,4 @@ def simple():
 	e1, e2 = an.do_things()
 	print(f'SE: {e1}\nID: {e2}')
 
-if __name__ == '__main__': size_test()
+if __name__ == '__main__': confidence_test()

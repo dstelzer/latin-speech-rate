@@ -49,11 +49,18 @@ class CelexAnalysis(Analysis):
 			new[self.select_form(word)] += self.select_count(word)
 		self.corpus = new
 
+def confidence_test():
+	input()
+	analyzer = CelexAnalysis(log=False, **ENGLISH)
+	analyzer.load_corpus('data/english.pickle.bz2')
+	analyzer.bootstrap_for_confidence(n=25, save='math/english_confidence.pickle.bz2')
+
 def size_test():
 	input()
 	analyzer = CelexAnalysis(log=False, **ENGLISH)
 	analyzer.load_corpus('data/english.pickle.bz2')
-	analyzer.calculate_reduced_e2(step=100_000, n=1, save='math/english_filled.pickle.bz2', extra_xs=[1000,5000,10000,50000])
+	top = analyzer.tokens * 10
+	analyzer.calculate_reduced_e2(n=2, save='math/english_bootstrap.pickle.bz2', logscale=True, npts=200, bootstrap=True, top=top)
 
 def basic_analysis():
 	input()
@@ -64,4 +71,4 @@ def basic_analysis():
 	print(e2)
 
 if __name__ == '__main__':
-	size_test()
+	confidence_test()
