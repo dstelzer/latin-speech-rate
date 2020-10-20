@@ -47,6 +47,11 @@ class Processor:
 		
 		self.total_counts = Counter()
 	
+	def copy(self):
+		new = Processor()
+		new.total_counts = self.total_counts.copy()
+		return new
+	
 	def macronize(self, text):
 		return self.macronizer.macronize(text, domacronize=True, alsomaius=False, performutov=True, performitoj=True, markambigs=False)
 	

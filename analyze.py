@@ -6,6 +6,7 @@ from itertools import product
 import random
 import pickle
 import bz2
+from pathlib import Path
 
 import numpy as np
 
@@ -176,13 +177,15 @@ class Analysis: # Simplest version of the analysis, takes a Counter mapping word
 		if logscale:
 			lb = np.log10(bottom)
 			lt = np.log10(top)
-			xs = np.rint(np.logspace(lb, lt, npts)).astype(int) # Log space rounded to integers
+			xs = np.logspace(lb, lt, npts)
 		else:
-			xs = np.rint(np.linspace(bottom, top, npts)).astype(int)
+			xs = np.linspace(bottom, top, npts)
+		xs = np.rint(xs).astype(int) # We need integers only
+		np.random.shuffle(xs) # Shuffle it to make the progress bar work better
 		data = []
 		self.inflate_corpus()
 		for x in tqdm(xs):
-			for _ in tqdm(range(n), leave=False):
+			for _ in tqdm(range(n), leave=False, disable=(n<2)):
 				self.reduce_corpus(desired_size=x, bootstrap=bootstrap)
 				self.count_unigrams()
 				self.count_bigrams()
@@ -190,6 +193,8 @@ class Analysis: # Simplest version of the analysis, takes a Counter mapping word
 				y = self.entropy2()
 				data.append((x,y))
 				self.unreduce()
+		
+		data.sort() # Undo the shuffling we did earlier
 		
 		if save is not None: # Save to a file
 			opener = bz2.open if str(save).endswith('bz2') else open # Make sure we open the file the right way
@@ -223,17 +228,32 @@ def confidence_test():
 	analyzer.load_corpus('data/latin/phi5.pickle.bz2')
 	analyzer.bootstrap_for_confidence(n=25, save='math/latin_confidence.pickle.bz2')
 
-def size_test():
+def simple_test():
 	input()
 	analyzer = Analysis(log=False)
 	analyzer.load_corpus('data/latin/phi5.pickle.bz2')
-	top = analyzer.tokens * 100
-	analyzer.calculate_reduced_e2(logscale=True, npts=200, n=2, save='math/latin_bootstrap.pickle.bz2', bootstrap=True, top=top)
+	analyzer.calculate_reduced_e2(logscale=True, npts=200, n=5, save='math/latin_log.pickle.bz2', bootstrap=False)
 
-def simple():
+def size_test():
+	input()
+	analyzer = Analysis(log=False)
+	for i in trange(10):
+		analyzer.load_corpus(f'data/latin/90/{i:02d}.pickle.bz2')
+	#	print(analyzer.tokens)
+	#	top = analyzer.tokens * 100
+		analyzer.calculate_reduced_e2(logscale=True, npts=200, n=1, save=f'math/latin90/{i:02d}.pickle.bz2', bootstrap=False)
+
+def auth_test():
+	input()
+	analyzer = Analysis(log=False)
+	for auth in tqdm(list(Path('data/latin/auth/').glob('*.pickle.bz2'))):
+		analyzer.load_corpus(auth)
+		analyzer.calculate_reduced_e2(logscale=True, npts=200, n=1, save=Path('math/latin_auth')/auth.name, bootstrap=False)
+
+def basic():
 	an = Analysis()
 	an.load_corpus('data/latin/phi5.pickle.bz2')
 	e1, e2 = an.do_things()
 	print(f'SE: {e1}\nID: {e2}')
 
-if __name__ == '__main__': confidence_test()
+if __name__ == '__main__': simple_test()

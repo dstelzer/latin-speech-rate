@@ -1,0 +1,7 @@
+IR: mean 39.15 bits/s, stdev 5.10 bits/s
+ID: value 6.32 bits/syl, stderr 0.033 bits/syl
+
+IR = SR × ID
+
+SR = IR / ID = 6.19
+stdev of SR = stdev of IR / ID = 0.81

@@ -1,5 +1,7 @@
 import bz2
 import pickle
+from pathlib import Path
+import random
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -61,7 +63,7 @@ class Dataset:
 		for x,y in zip(self.xs, self.ys):
 			print(f'{x},{y}')
 
-if __name__ == '__main__':
+def compare_bootstrap():
 	d0 = Dataset('math/english_log.pickle.bz2')
 	d0.fit_curve()
 	print(d0.popt)
@@ -80,3 +82,56 @@ if __name__ == '__main__':
 	d.draw_curve()
 	d.draw_asymptote()
 	d.show()
+
+def compare_latin():
+	d0 = Dataset('math/latin_log.pickle.bz2')
+	d0.fit_curve()
+	d0.mark_curve(xmax=max(d0.xs)*10, npts=500)
+	d0.draw_data('hr')
+	d0.draw_curve()
+	d0.draw_asymptote()
+	
+	for i in range(15):
+		d = Dataset(f'math/latin90/{i:02d}.pickle.bz2')
+		d.fit_curve()
+		d.mark_curve(xmax=max(d0.xs)*10, npts=500)
+		d.draw_data('ob Dg vm ^k sy oc Db vg ^m sk oy Dc vb ^g sm ok'.split()[i])
+		d.draw_curve()
+		d.draw_asymptote()
+	
+	d0.show()
+
+def compare_latin_authors():
+	vals = []
+	
+	d0 = Dataset('math/latin_log.pickle.bz2')
+	d0.fit_curve()
+	
+	for auth in Path('math/latin_auth').glob('*.pickle.bz2'):
+		d = Dataset(auth)
+		d.fit_curve()
+		d.mark_curve(xmax=max(d0.xs)*10, npts=500)
+		d.draw_data(random.choice('oDv^s')+random.choice('bgmkyc'))
+		d.draw_curve()
+		d.draw_asymptote()
+		vals.append(d.popt[0])
+		print(f'Without {auth.stem.split(".")[0]}: {d.popt[0]}')
+	
+	d0.mark_curve(xmax=max(d0.xs)*10, npts=500)
+	d0.draw_data('hr')
+	d0.draw_curve('-b')
+	d0.draw_asymptote(color='r')
+	
+	print(f'Actual value: {d0.popt[0]}')
+	print(f'Approximated value: {sum(vals)/len(vals)}')
+	print(f'Approximated standard error: {np.std(vals, ddof=1)}')
+	
+	d0.show()
+
+def latin_author_histogram():
+	with bz2.open('data/latin/authors.pickle.bz2', 'r') as f:
+		data = pickle.load(f)
+	plt.hist(np.array(list(data.values())), bins=20)
+	plt.show()
+
+if __name__ == '__main__': compare_latin_authors()
