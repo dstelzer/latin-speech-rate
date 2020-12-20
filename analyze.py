@@ -221,6 +221,14 @@ class Analysis: # Simplest version of the analysis, takes a Counter mapping word
 				pickle.dump(data, f)
 		
 		return data
+	
+	def dump_frequencies(self, save=None):
+		arr = np.array(list(self.unigrams.values()))
+		if save is not None:
+			opener = bz2.open if str(save).endswith('bz2') else open # Make sure we open the file the right way
+			with opener(save, 'wb') as f:
+				pickle.dump(arr, f)
+		return arr
 
 def confidence_test():
 	input()
@@ -232,7 +240,7 @@ def simple_test():
 	input()
 	analyzer = Analysis(log=False)
 	analyzer.load_corpus('data/latin/phi5.pickle.bz2')
-	analyzer.calculate_reduced_e2(logscale=True, npts=200, n=5, save='math/latin_log.pickle.bz2', bootstrap=False)
+	analyzer.calculate_reduced_e2(logscale=True, npts=200, n=5, save='math/latin_log_low.pickle.bz2', bootstrap=False, bottom=100)
 
 def size_test():
 	input()
@@ -252,8 +260,16 @@ def auth_test():
 
 def basic():
 	an = Analysis()
-	an.load_corpus('data/latin/phi5.pickle.bz2')
+	an.load_corpus('data/latin/phi5_complete.pickle.bz2')
 	e1, e2 = an.do_things()
 	print(f'SE: {e1}\nID: {e2}')
+
+def freqs():
+	an = Analysis()
+	an.load_corpus('data/latin/phi5_complete.pickle.bz2')
+	an.count_unigrams()
+	an.dump_frequencies('math/latin_sylfreq.pickle.bz2')
+	print(max(an.unigrams.items(), key=lambda a:a[1]))
+	print(min(an.unigrams.items(), key=lambda a:a[1]))
 
 if __name__ == '__main__': simple_test()

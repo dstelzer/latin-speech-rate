@@ -173,4 +173,4 @@ def author_data():
 			f.write(f'{name}\t{id}\t{words}\n')
 	print('Done')
 
-if __name__ == '__main__': main_run_complete_hack()
+if __name__ == '__main__': main_run_complete()

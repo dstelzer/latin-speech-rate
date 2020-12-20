@@ -5,3 +5,6 @@ IR = SR × ID
 
 SR = IR / ID = 6.19
 stdev of SR = stdev of IR / ID = 0.81
+
+MIDPHON?
+Linguistic Symposium on Romance Languages (LSRL)

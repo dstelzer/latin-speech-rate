@@ -63,6 +63,46 @@ class Dataset:
 		for x,y in zip(self.xs, self.ys):
 			print(f'{x},{y}')
 
+class CSVDataset(Dataset):
+	def __init__(self, fn):
+		with open(fn, 'r') as f:
+			data = [row.split(',') for row in f.read().split('\n') if row]
+		self.xs = np.array([float(d[0])*10000 for d in data])
+		self.ys = np.array([float(d[1]) for d in data])
+		self.func = hyperbolic
+		self.p0 = np.array([max(self.ys), 300, -1, 1])
+
+def basic():
+	d = Dataset('math/english_log_300.pickle.bz2')
+	d.fit_curve()
+	d.mark_curve(xmax = max(d.xs)*1)
+#	d.draw_data('r.')
+	plt.plot(d.xs, d.ys, '.', color='#ff7070')
+	d.draw_curve('-k')
+	d.draw_asymptote('--', 'r')
+	print(d.popt)
+	
+	d2 = Dataset('math/latin_log.pickle.bz2')
+	d2.fit_curve()
+	d2.mark_curve(xmax = max(d.xs)*1)
+#	d2.draw_data('b.')
+	plt.plot(d2.xs, d2.ys, '.', color='#70c4ff')
+	d2.draw_curve('-k')
+	d2.draw_asymptote('--', 'b')
+	print(d2.popt)
+	
+	d.show()
+
+def csv():
+	d = CSVDataset('math/zipf.csv')
+	d.fit_curve()
+	d.mark_curve(xmax = max(d.xs)*10**15)
+	d.draw_data('r.')
+	d.draw_curve('-k')
+	d.draw_asymptote('--', 'r')
+	print(d.popt)
+	d.show()
+
 def compare_bootstrap():
 	d0 = Dataset('math/english_log.pickle.bz2')
 	d0.fit_curve()
@@ -111,15 +151,16 @@ def compare_latin_authors():
 		d = Dataset(auth)
 		d.fit_curve()
 		d.mark_curve(xmax=max(d0.xs)*10, npts=500)
-		d.draw_data(random.choice('oDv^s')+random.choice('bgmkyc'))
+		# old: random.choice('oDv^s')
+		d.draw_data('.'+random.choice('bgmkyc'))
 		d.draw_curve()
 		d.draw_asymptote()
 		vals.append(d.popt[0])
 		print(f'Without {auth.stem.split(".")[0]}: {d.popt[0]}')
 	
 	d0.mark_curve(xmax=max(d0.xs)*10, npts=500)
-	d0.draw_data('hr')
-	d0.draw_curve('-b')
+	d0.draw_data('.r')
+	d0.draw_curve('-k')
 	d0.draw_asymptote(color='r')
 	
 	print(f'Actual value: {d0.popt[0]}')
@@ -134,4 +175,11 @@ def latin_author_histogram():
 	plt.hist(np.array(list(data.values())), bins=20)
 	plt.show()
 
-if __name__ == '__main__': compare_latin_authors()
+def latin_sylfreq_histogram():
+	with bz2.open('math/latin_sylfreq.pickle.bz2', 'rb') as f:
+		data = pickle.load(f)
+	data.sort()
+	plt.plot(data[::-1])
+	plt.show()
+
+if __name__ == '__main__': basic()

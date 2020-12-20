@@ -70,5 +70,17 @@ def basic_analysis():
 	print(e1)
 	print(e2)
 
+def german():
+	input()
+	analyzer = CelexAnalysis(**GERMAN, log=False)
+	analyzer.load_corpus('data/german.pickle.bz2')
+	analyzer.calculate_reduced_e2(logscale=False, npts=200, n=5, save='math/german_lin.pickle.bz2', bootstrap=False)
+
+def english():
+	input()
+	analyzer = CelexAnalysis(**ENGLISH, log=False)
+	analyzer.load_corpus('data/english.pickle.bz2')
+	analyzer.calculate_reduced_e2(logscale=True, npts=300, n=5, save='math/english_log_300.pickle.bz2', bootstrap=False)
+
 if __name__ == '__main__':
-	confidence_test()
+	english()
