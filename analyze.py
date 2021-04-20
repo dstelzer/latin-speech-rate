@@ -239,8 +239,8 @@ def confidence_test():
 def simple_test():
 	input()
 	analyzer = Analysis(log=False)
-	analyzer.load_corpus('data/latin/phi5.pickle.bz2')
-	analyzer.calculate_reduced_e2(logscale=True, npts=200, n=5, save='math/latin_log_low.pickle.bz2', bootstrap=False, bottom=100)
+	analyzer.load_corpus('data/latin/phi5_complete.pickle.bz2')
+	analyzer.calculate_reduced_e2(logscale=True, npts=200, n=5, save='math/latin_log_complete.pickle.bz2', bootstrap=False)
 
 def size_test():
 	input()
@@ -254,13 +254,13 @@ def size_test():
 def auth_test():
 	input()
 	analyzer = Analysis(log=False)
-	for auth in tqdm(list(Path('data/latin/auth/').glob('*.pickle.bz2'))):
+	for auth in tqdm(list(Path('data/latin/auth_all/').glob('*.pickle.bz2'))):
 		analyzer.load_corpus(auth)
-		analyzer.calculate_reduced_e2(logscale=True, npts=200, n=1, save=Path('math/latin_auth')/auth.name, bootstrap=False)
+		analyzer.calculate_reduced_e2(logscale=True, npts=200, n=1, save=Path('math/latin_auth_all')/auth.name, bootstrap=False)
 
 def basic():
 	an = Analysis()
-	an.load_corpus('data/latin/phi5_complete.pickle.bz2')
+	an.load_corpus('data/latin/phi5.pickle.bz2')
 	e1, e2 = an.do_things()
 	print(f'SE: {e1}\nID: {e2}')
 
@@ -271,5 +271,7 @@ def freqs():
 	an.dump_frequencies('math/latin_sylfreq.pickle.bz2')
 	print(max(an.unigrams.items(), key=lambda a:a[1]))
 	print(min(an.unigrams.items(), key=lambda a:a[1]))
+	e1, e2 = an.do_things()
+	print(f'SE: {e1}\nID: {e2}')
 
 if __name__ == '__main__': simple_test()

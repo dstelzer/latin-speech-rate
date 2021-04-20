@@ -31,11 +31,12 @@ IMPORTANT_AUTHORS = {
 	'LAT1212', # Apuleius
 	'LAT0836', # Celsus
 	# The above are all authors with more than 100k words in the corpus
+	'LAT2806', # Including Justinian again just as a demonstration - remove when running on `auth` rather than `auth_all`
 }
 
 GLOBAL_EXCLUSIONS = {
 	'LAT9999', # A bibliography file that should not be included
-	'LAT2806', # Justinian's Digesta, which is an outlier that pulls the whole value down
+	#'LAT2806', # Justinian's Digesta, which is an outlier that pulls the whole value down
 }
 
 class PHI5Corpus:
@@ -161,7 +162,7 @@ def main_run_authors():
 	# Then, go through and process the set of important authors, minus each one individually
 	for auth in tqdm(IMPORTANT_AUTHORS):
 		print(f'Working on {auth}')
-		c.process_and_save(f'auth/{auth}.pickle.bz2', authorial=True, include=IMPORTANT_AUTHORS-{auth}, precomputed=proc, overwrite=False, shuffle=True)
+		c.process_and_save(f'auth_all/{auth}.pickle.bz2', authorial=True, include=IMPORTANT_AUTHORS-{auth}, precomputed=proc, overwrite=False, shuffle=True)
 
 def author_data():
 	input()
@@ -173,4 +174,17 @@ def author_data():
 			f.write(f'{name}\t{id}\t{words}\n')
 	print('Done')
 
-if __name__ == '__main__': main_run_complete()
+def author_data_2():
+	input()
+	with bz2.open('phi5_complete.pickle.bz2', 'r') as f:
+		d = pickle.load(f)
+	c1, c2 = len(d), sum(d.values())
+	print('Total', c1, c2)
+	for auth in Path('auth_all').glob('*.pickle.bz2'):
+		with bz2.open(auth, 'r') as f:
+			d = pickle.load(f)
+		t1, t2 = len(d), sum(d.values())
+		print(auth.stem, c1-t1, c2-t2)
+	input()
+
+if __name__ == '__main__': author_data_2()

@@ -21,7 +21,7 @@ params2 = {
 
 INFILE = 'data'
 OUTFILE = 'english'
-COUNTER = 'Cob'
+COUNTER = 'CobW'
 
 alphabetic = 'abcdefghijklmnopqrstuvwxyz'
 
@@ -29,12 +29,15 @@ with open(f'{INFILE}.csv', 'r', newline='') as inf:
 	read = csv.DictReader(inf, **params)
 	data = []
 	count = 0
+	tokens = 0
 	for row in read: # This could be a comprehension but that makes it hard to get both `count` and the filtered `data`
 	#	if int(row[COUNTER]): data.append(dict(row))
 		count += 1
+		tokens += int(row[COUNTER])
 	#	if any(c not in alphabetic for c in row['Word'].lower()): continue # Oh's thesis indicates that words with nonalphabetics were removed
 		data.append(dict(row))
 	print(data[0])
 	with bz2.open(f'{OUTFILE}.pickle.bz2', 'wb') as outf:
 		pickle.dump(data, outf)
 	print(f'{count} forms read; {len(data)} saved')
+	print(f'Tokens: {tokens}')

@@ -7,6 +7,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.optimize as opt
 
+from matplotlib.ticker import StrMethodFormatter # Needed for a hack to make formatting line up in the talk slides
+
 def exponential(x, a, b, c): # A(1-e^(-B(x-C))
 	return a*(1 - np.exp(-b * (x-c)))
 # p0: [max(self.ys), 1/min(self.xs), 0]
@@ -51,9 +53,12 @@ class Dataset:
 	def draw_curve(self, format='-r'):
 		plt.plot(self.pxs, self.pys, format)
 	
-	def draw_asymptote(self, line='--', color='g'):
+	def draw_asymptote(self, line='--', color='g', include_tick=True):
 		y = self.popt[0]
 		plt.axhline(y=y, linestyle=line, color=color)
+		if include_tick:
+			newticks = [y]
+			plt.yticks(list(plt.yticks()[0]) + newticks) # Add an extra tick to the y-axis
 	
 	def show(self): # Convenience method
 		plt.xscale('log')
@@ -73,23 +78,42 @@ class CSVDataset(Dataset):
 		self.p0 = np.array([max(self.ys), 300, -1, 1])
 
 def basic():
-	d = Dataset('math/english_log_300.pickle.bz2')
+	d = Dataset('math/latin_log_complete.pickle.bz2')
 	d.fit_curve()
-	d.mark_curve(xmax = max(d.xs)*1)
+	d.mark_curve(xmax = max(d.xs)*10)
 #	d.draw_data('r.')
 	plt.plot(d.xs, d.ys, '.', color='#ff7070')
 	d.draw_curve('-k')
-	d.draw_asymptote('--', 'r')
+	d.draw_asymptote('--', 'r', False)
 	print(d.popt)
 	
 	d2 = Dataset('math/latin_log.pickle.bz2')
 	d2.fit_curve()
-	d2.mark_curve(xmax = max(d.xs)*1)
+	d2.mark_curve(xmax = max(d.xs)*10)
 #	d2.draw_data('b.')
 	plt.plot(d2.xs, d2.ys, '.', color='#70c4ff')
 	d2.draw_curve('-k')
 	d2.draw_asymptote('--', 'b')
 	print(d2.popt)
+	
+	d.show()
+
+def figures_for_presentation():
+	d = Dataset('math/latin_log.pickle.bz2')
+	d.fit_curve()
+	d.mark_curve(xmax = max(d.xs)*100)
+#	d.draw_data('b.')
+	plt.plot(d.xs, d.ys, '.', color='#70c4ff')
+	d.draw_curve('-k')
+#	plt.plot(d.pxs, d.pys, '-k', alpha=0)
+	d.draw_asymptote('--', 'r')
+#	plt.axhline(y=d.popt[0], linestyle='--', color='r', alpha=0)
+	plt.xlabel('Corpus Size (tokens)')
+	plt.ylabel('Information Density (bits/syl)')
+	
+	plt.gca().yaxis.set_major_formatter(StrMethodFormatter('{x:,.2f}')) # 2 decimal places
+#	newticks = [6.4]
+#	plt.yticks(list(plt.yticks()[0]) + newticks) # Add an extra tick to the y-axis
 	
 	d.show()
 
@@ -147,21 +171,22 @@ def compare_latin_authors():
 	d0 = Dataset('math/latin_log.pickle.bz2')
 	d0.fit_curve()
 	
-	for auth in Path('math/latin_auth').glob('*.pickle.bz2'):
+	for auth in Path('math/latin_auth').glob('*.pickle.bz2'): # Use auth_all to include the Digesta
+		if '0474' in auth.stem: continue # Remove Cicero if you want
 		d = Dataset(auth)
 		d.fit_curve()
 		d.mark_curve(xmax=max(d0.xs)*10, npts=500)
 		# old: random.choice('oDv^s')
-		d.draw_data('.'+random.choice('bgmkyc'))
-		d.draw_curve()
-		d.draw_asymptote()
+		d.draw_data('.'+random.choice('bgmyc'))
+		d.draw_curve('k')
+#		d.draw_asymptote('--', 'k', include_tick=False)
 		vals.append(d.popt[0])
 		print(f'Without {auth.stem.split(".")[0]}: {d.popt[0]}')
 	
-	d0.mark_curve(xmax=max(d0.xs)*10, npts=500)
-	d0.draw_data('.r')
-	d0.draw_curve('-k')
-	d0.draw_asymptote(color='r')
+#	d0.mark_curve(xmax=max(d0.xs)*10, npts=500)
+#	d0.draw_data('.r')
+#	d0.draw_curve('-k')
+	d0.draw_asymptote('-', 'r')
 	
 	print(f'Actual value: {d0.popt[0]}')
 	print(f'Approximated value: {sum(vals)/len(vals)}')
