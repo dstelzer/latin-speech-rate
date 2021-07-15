@@ -260,7 +260,7 @@ def auth_test():
 
 def basic():
 	an = Analysis()
-	an.load_corpus('data/latin/phi5.pickle.bz2')
+	an.load_corpus('data/latin/phi5_complete.pickle.bz2')
 	e1, e2 = an.do_things()
 	print(f'SE: {e1}\nID: {e2}')
 
@@ -274,4 +274,4 @@ def freqs():
 	e1, e2 = an.do_things()
 	print(f'SE: {e1}\nID: {e2}')
 
-if __name__ == '__main__': simple_test()
+if __name__ == '__main__': basic()

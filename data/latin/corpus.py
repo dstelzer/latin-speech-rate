@@ -176,11 +176,11 @@ def author_data():
 
 def author_data_2():
 	input()
-	with bz2.open('phi5_complete.pickle.bz2', 'r') as f:
+	with bz2.open('phi5.pickle.bz2', 'r') as f:
 		d = pickle.load(f)
 	c1, c2 = len(d), sum(d.values())
 	print('Total', c1, c2)
-	for auth in Path('auth_all').glob('*.pickle.bz2'):
+	for auth in Path('auth').glob('*.pickle.bz2'):
 		with bz2.open(auth, 'r') as f:
 			d = pickle.load(f)
 		t1, t2 = len(d), sum(d.values())

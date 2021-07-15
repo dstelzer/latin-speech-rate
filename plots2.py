@@ -65,8 +65,8 @@ def make_plot_2():
 	d2 = [np.array(data[lang]) for lang in langs]
 	for i, (d, c) in enumerate(zip(d2, 'ybrybgr')):
 		violin_manual(d, i, c)
-	#violin_manual([], i+1, 'k', (6.19,0.81))
-	#langs += ['LAT']
+	violin_manual([], i+1, 'k', (6.19,0.81))
+	langs += ['LAT']
 	plt.xticks(range(len(langs)), langs)
 	plt.ylabel('Speech rate (syllables per second)')
 	plt.grid(axis='y', linestyle=':', color='k', alpha=0.5)
