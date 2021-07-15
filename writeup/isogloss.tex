@@ -1,0 +1,196 @@
+\documentclass[12pt,twoside]{article}
+\usepackage[a4paper,width=150mm,top=30mm,bottom=30mm,bindingoffset=10mm]{geometry}
+\linespread{1}
+\usepackage[utf8]{inputenc} %Standard diacritics in Romance languages (accents, umlauts)
+\usepackage{newtxtext} %Uses Times New Roman font
+\usepackage{wasysym}
+\usepackage{diagbox}
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
+\usepackage[style=authoryear-icomp,natbib=true,sortcites=true]{biblatex}% natbib=true so we can use natbib commands with biblatex
+% Also: authoryear-icomp is used so that when you cite the same author with different years, you get "according to Herberger (2002, 2004)" rather than "according to Herberger (2002), Herberger (2004)"
+\addbibresource{isogloss.bib}
+
+\usepackage{xpatch}
+
+\usepackage[tiny,bf]{titlesec}
+\titleformat{\subsection}{}{\thesubsection}{1em}{\itshape}
+\titleformat{\subsubsection}{}{\thesubsubsection}{1em}{\itshape}
+\titlelabel{\thetitle.\quad}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhead{}
+\fancyhead[LE]{\thepage \hspace{3mm} \small Isogloss YEAR, ISSUE/NR}
+\fancyhead[RE]{\small Daniel Stelzer}
+\fancyhead[LO]{\small How fast did Cicero speak?}
+\fancyhead[RO]{\small Isogloss YEAR, 1/2 \normalsize \thepage}
+\fancyfoot{}
+%\setcounter{page}{23} %This sets the initial page at a number other than 1 (in this case 23).
+
+\fancypagestyle{first}{
+	\fancyhead{}
+	\fancyhead[L]{\small ISSN 2835-4138 (digital)\\https://doi.org/10.5565/rev/isogloss.\\{}}
+	\fancyhead[R]{\small Isogloss YEAR, ISSUE/NR\\PAGES\\{}}
+	\fancyfoot{}}
+
+\newcommand{\pref}[1]{(\ref{#1})} % If you use \ref{xx}, the reference in the text appears without parentheses: "as we see in 1, ..." instead of "as we see in (1)...". So we create a new command: instead of \ref, call \pref (Parentheses REFerence) which specifies that any cross references to xx appear in parentheses.
+
+% The following syntax, in tandem with xpatch package, removes the brackets in the references list. It also removes the dot after the line.
+% See https://tex.stackexchange.com/a/428193/169121
+\xpatchbibmacro{date+extradate}{%
+	\printtext[parens]%
+}{%
+\setunit{\addperiod\space}%
+\printtext%
+}{}{}
+
+\usepackage{tipa} %for IPA
+\usepackage{phonrule} %for phonological rules
+\usepackage[nocenter]{qtree} %for trees
+\usepackage{gb4e} %for examples and glossing
+
+\usepackage[normalem]{ulem} %STRIKETHROUGH TEXT
+
+\usepackage{authblk,etoolbox}
+\renewcommand\Authfont{\Large}
+\renewcommand\Affilfont{\normalsize}
+
+\usepackage{hyperref}
+\newcommand*{\tocref}[1]{\hyperref[{#1}]{\ref*{#1}.~\nameref*{#1}}}
+% https://tex.stackexchange.com/q/121865/169121
+
+\makeatletter
+% patch \maketitle so that it doesn't center
+\patchcmd{\@maketitle}{center}{flushleft}{}{}
+\patchcmd{\@maketitle}{center}{flushleft}{}{}
+% patch \maketitle so that the font size for the title is normal
+\patchcmd{\@maketitle}{\LARGE}{\normalsize}{}{}
+
+\def\maketitle{{%
+		\renewenvironment{tabular}[2][]
+		{\begin{flushleft}}
+			{\end{flushleft}}
+		\AB@maketitle}}
+\makeatother
+
+\title{{\Huge{}How fast did Cicero speak?}\\{\Large{}The speech rate of Classical Latin versus its Romance descendants}}
+\author{Daniel Stelzer}
+\affil{University of Illinois at Urbana-Champaign\\stelzer3@illinois.edu} 
+\setlength{\affilsep}{1pt}
+\date{}
+
+%IF THERE ARE TWO AUTHORS:
+%\title{\Huge{Patterns of syntactic microvariation: the case of European Portuguese}}
+%\author{Noam Chomsky} \affil{Massachusetts Institute of Technology\\noam.chomsky@mit.edu} 
+%\author{Howard Lasnik} \affil{University of Maryland\\howard.lasnik@umd.edu}
+%\setlength{\affilsep}{1pt}
+%\date{}
+
+\begin{document}
+
+
+\maketitle
+
+\thispagestyle{first}
+
+\vspace{0.5cm}
+\noindent \includegraphics[ height=1cm]{ccby.png}
+
+\hfill Received: 20-01-2034 
+
+\hfill Accepted: 21-01-2034
+
+\hfill Published: 22-01-2034
+
+\vspace{1cm}
+
+\noindent \textbf{How to cite} Author, Title, YEAR
+
+\vspace{1.5cm}
+
+\noindent \textbf{Abstract}
+\begin{center}
+ 	\line(1,0){430}
+\end{center}
+\vspace{-0,3cm}
+\noindent While languages convey significantly different amounts of information per syllable and syllables per second, recent research suggests that the product of these values---information conveyed per second---is much less variable. Using new methods of extrapolation and resampling, we were able to estimate the information conveyed per syllable in a written Classical Latin corpus. We were then able to use this cross-linguistic consistency to estimate the natural speech rate of Classical Latin, a language that hasn't been natively spoken for thousands of years. Our analysis suggests that it was spoken at a rate significantly slower than modern Romance languages, fairly similar to modern English; a high-level consideration of historical sound changes in Romance supports this conclusion, lending additional credence to our results. \\
+\vspace{-0,4cm}
+\begin{center}
+	\line(1,0){430}
+\end{center}
+
+\begin{center}
+	\textbf{Table of Contents}
+\end{center}
+
+\begin{large}
+\begin{center}
+	\begin{tabular}{l l}
+		\tocref{sec:bg} & \tocref{sec:disc} \\
+		\tocref{sec:meth} & \tocref{sec:concl} \\
+		\tocref{sec:res} & \hyperref[sec:refs]{References} \\
+	\end{tabular}
+\end{center}
+\end{large}
+
+\section{Background}
+\label{sec:bg}
+
+The idea that all languages are equally expressive---that, despite all the variation in phonology, syntax, and so on, every language is equally suited to communication and equally complex in its grammar---is ubiquitous in modern linguistics. \citet{joseph} attribute the earliest expression of this concept to Humboldt in the 1820s, who claimed that ``all [languages] contain all that is rigorously needed not only for the correctness, but the perfection of expression'' (\cite[8]{rémusat}, translation from \cite[344]{joseph}). By the end of the 19th century, this idea had gained support from the study of language evolution: \citet{passy} suggested that language change is an eternal struggle between the tendencies ``to get rid of what is superfluous'' and ``to highlight what is necessary'' (\cite[227]{passy}, translation from \cite[352]{joseph}), preventing any overall increase or decrease of complexity.
+
+Despite significant pushback, especially from those who bristled at the idea of equating European languages with those of Africa and the Americas, this idea slowly gained traction among the linguistic community; by 1955 it had made its way into the \emph{Encyclopædia Brittanica} article on ``Language'', now with a specific mention of ``complexity'': ``All languages of today are equally complex and equally adequate to express all the facets of the speakers’ culture, and all can be expanded and modified as needed.'' \citep[698]{trager}. While the idea of ``primitive'' versus ``sophisticated'' languages persists in pop culture, this idea of equal complexity is now put forth as a basic axiom in introductory textbooks: \citet[8]{akmajian}, for example, state plainly that ``all known languages are at a similar level of complexity'', and \citet[8]{ogrady} assert that ``linguists don't even try to rate languages as [\ldots] simple or complex''.\footnote{Outside of introductory textbooks, some linguists are more skeptical. \citet[2]{shosted} refers to it as ``a claim that has been, until fairly recently, more a matter of dogma than of science'', and \citet[216]{maddieson} suggests that ``[s]uch a view seems to be based on the humanistic principle that all languages are to be held in equal esteem and are equally capable of serving the communicative demands placed on them. In rejecting the notion of `primitive' languages linguists seem to infer that a principle of equal complexity must apply.'' On the flipside, other linguists support the claim for purely theoretical reasons: \citet[165-166]{chomsky} suggests that all languages ``ought to'' have the same overall budget for markedness, no matter how they spend it. For more discussion, see \citet{joseph}.}
+
+% Maddieson 216: "Such a view seems to be based on the humanistic principle that all languages are to be held in equal esteem and are equally capable of serving the communicative demands placed on them. In rejecting the notion of `primitive' languages linguists seem to infer that a principle of equal complexity must apply."
+
+However, what exactly this universal ``complexity'' or ``expressiveness'' \emph{means} is far from obvious. Many studies, such as \citet{maddieson} and \citet{shosted}, have tried to quantify the complexity of different aspects of grammar, looking for correlations between them (e.g. complicated phonology correlating with simpler morphology)---but results have generally been inconclusive.
+
+Starting in the 1950s, linguists studying this topic were given a new suite of tools from the burgeoning discipline of information theory. \citet{shannon} introduced new mathematical models of information transmission, incorporating concepts like entropy, noise, and channel capacity, and mathematically-inclined linguists soon started applying these concepts to spoken language. \citet{karlgren}, for example, suggested that ``seemingly careless pronunciation'' was actually ``an efficient coding to fit the channel'' of vocal transmission \citep[674]{karlgren}, and in particular that ``there is an equilibrium between information value on the one hand and duration and similar qualities of the realization on the other'' \citep[676]{karlgren}.
+
+Karlgren failed to find significant correlations between the lengths of words and the ``carelessness'' of speech, but the appeal of channel-focused models has persisted. As \citet[539]{pellegrino} put it, ``[l]anguage is actually a communicative system whose primary function is to transmit information. The unity of all languages is probably to be found in this function, regardless of the different linguistic strategies on which they rely.'' Over the decades, many authors have continued to examine language ``complexity'' through this lens.
+
+In recent years, in particular, access to written corpora has grown dramatically. Corpora with hundreds of millions of tokens are no longer uncommon, with web-based English corpora easily reaching the billions. \citet{oh} takes advantage of this, analyzing the information density in written corpora from 18 languages. Oh aims to investigate what she calls the ``Uniform Information Density hypothesis''---the idea that ``due to channel capacity, speakers tend to encode information strategically in order to achieve uniform rate of information conveyed per linguistic unit''---and proposes a number of different measures of information density to test this.
+
+On the other hand, some authors have questioned whether information-theoretic entropy is an appropriate metric for measuring the information content of natural language. After all, \citet{shannon} themselves specifically note that ``[t]he word \emph{information}, in this theory, is used in a special sense that must not be confused with its ordinary usage. In particular, \emph{information} must not be confused with meaning.'' \citep[8]{shannon} \citet{pellegrino}, then, aimed to come up with a better cross-linguistic measure of semantic meaning, in order to analyze how \emph{meaning} (rather than Shannon's \emph{information}) is encoded for verbal communication. They came up with a measure based on the ratio of syllables in parallel corpora---in other words, the number of syllables needed to convey a particular text in a given language, compared to the number of syllables needed to convey that same text in a control language.
+
+Using this measure, they found a striking negative correlation between the density of meaning per syllable (``meaning density''\footnote{``Meaning density'' is my own terminology, to avoid ambiguity; \citet{pellegrino} call it ``information density'' (ID), and \citet{coupé} call it ``syntagmatic density of information ratio'' (SDIR).}) and the number of syllables spoken per second (``speech rate'') in different languages. In the end, though, they rejected the hypothesis that the amount of meaning conveyed per second was uniform between languages---with a note that ``[t]he very small size of the sample (N=7 languages) strongly limits the reliability of the results'' \citep[550]{pellegrino}. They also worked with relatively small corpora---20 texts of 5 sentences each---and were not able to control for the effects of individual translators' style.
+
+Many of these results were brought together by \citet{coupé}, who first showed that one of \citet{oh}'s corpus-based information density metrics was a good proxy for \citet{pellegrino}'s meaning density, then applied it to a wide variety of languages using larger written corpora. They found that the amount of information conveyed per second (``information rate'') was extremely consistent across the languages surveyed: while not perfectly constant (speech rate varies significantly by speaker, for example), this average information rate varies much less by language than speech rate or information density. They suggest that this is a result of ``universal communicative pressures characterizing the human-specific communication niche'' \citep[6]{coupé}---in other words, it's a property of how humans use language to communicate, on a larger scale than any individual language.
+
+The present study extrapolates from this. Speech rate is normally calculated through recordings of native speakers, which is impossible for a dead language like Classical Latin. But \citet{oh}'s methods of calculating information density only require a written corpus. If we assume the information rate is constant, can we calculate the information density from a corpus, and ``reverse engineer'' the speech rate from that?
+
+% Pellegrino 539: "Language is actually a communicative system whose primary function is to transmit information. The unity of all languages is probably to be found in this function, regardless of the different linguistic strategies on which they rely."
+
+% Shannon and Weaver 8: "The word \emph{information}, in this theory, is used in a special sense that must not be confused with its ordinary usage. In particular, \emph{information} must not be confused with meaning."
+
+\section{Methods}
+\label{sec:meth}
+
+\subsection{Entropy}
+
+\subsection{Representation}
+
+% Note: the version of CLTK used is specifically version 0.1.122, available at
+% https://github.com/cltk/cltk/tree/22fabfd4e26f677ecce30871af78561edefcaef6
+% It has not been tested with any later versions! In particular, the following major release completely overhauled the API, likely breaking everything
+% This particular version is also not available on PyPI; it needs to be downloaded from Github instead
+
+\subsection{Extrapolation}
+
+\subsection{Jackknifing}
+
+\section{Results}
+\label{sec:res}
+
+\section{Discussion}
+\label{sec:disc}
+
+\section{Conclusion}
+\label{sec:concl}
+
+%\nocite{*}
+\label{sec:refs}
+\setlength\bibitemsep{0.5\baselineskip} % TODO is this okay?
+\printbibliography
+
+\end{document}
