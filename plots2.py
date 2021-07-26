@@ -40,6 +40,7 @@ def violin_manual(data, pos, color, fake=None): # Manual version so we can fine-
 		y = k.evaluate(x)
 		mu = np.mean(data)
 		sigma = np.std(data)
+		print(mu, sigma)
 	else:
 		mu, sigma = fake
 		m = mu-2*sigma
@@ -60,12 +61,14 @@ def violin_manual(data, pos, color, fake=None): # Manual version so we can fine-
 def make_plot_2():
 	plt.rcParams.update({'font.size': 20})
 	data = get_data()
-	#langs = ['CAT', 'FRA', 'ITA', 'SPA']
+#	langs = ['CAT', 'FRA', 'ITA', 'SPA']
+#	colors = 'ybgr'
 	langs = ['VIE', 'ENG', 'JPN']
+	colors = 'ybr'
 	d2 = [np.array(data[lang]) for lang in langs]
-	for i, (d, c) in enumerate(zip(d2, 'ybrybgr')):
+	for i, (d, c) in enumerate(zip(d2, colors)):
 		violin_manual(d, i, c)
-	violin_manual([], i+1, 'k', (6.19,0.81))
+	violin_manual([], i+1, 'k', (6.29, 0.82))
 	langs += ['LAT']
 	plt.xticks(range(len(langs)), langs)
 	plt.ylabel('Speech rate (syllables per second)')

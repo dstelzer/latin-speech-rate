@@ -74,7 +74,7 @@ def german():
 	input()
 	analyzer = CelexAnalysis(**GERMAN, log=False)
 	analyzer.load_corpus('data/german.pickle.bz2')
-	analyzer.calculate_reduced_e2(logscale=False, npts=200, n=5, save='math/german_lin.pickle.bz2', bootstrap=False)
+	analyzer.calculate_reduced_e2(logscale=True, npts=200, n=5, save='math/german_log.pickle.bz2', bootstrap=False)
 
 def english():
 	input()
@@ -82,5 +82,23 @@ def english():
 	analyzer.load_corpus('data/english.pickle.bz2')
 	analyzer.calculate_reduced_e2(logscale=True, npts=300, n=5, save='math/english_log_300.pickle.bz2', bootstrap=False)
 
+def german_new():
+	input()
+	#analyzer = CelexAnalysis(**GERMAN, log=False)
+	#analyzer.load_corpus('data/german.pickle.bz2')
+	#analyzer.calculate_reduced_e2(logscale=True, npts=200, n=5, top=2_000_000, save='math/german_log_cut1.pickle.bz2', bootstrap=False)
+	analyzer = CelexAnalysis(**GERMAN, log=False) # Recreate it just in case
+	analyzer.load_corpus('data/german.pickle.bz2')
+	analyzer.calculate_reduced_e2(logscale=True, npts=200, n=5, top=2_000_000, save='math/german_log_cut2.pickle.bz2', bootstrap=False, cut_top=True)
+
+def misc_stats():
+	an = CelexAnalysis(**GERMAN, log=False)
+	print('Number of syllables in top 2000 words')
+	an.load_corpus('data/german.pickle.bz2')
+	an.corpus = Counter(dict(Counter(an.corpus).most_common(20000)))
+	an.count_unigrams()
+	print(len(an.unigrams))
+	print(list(an.unigrams.items())[:100])
+
 if __name__ == '__main__':
-	english()
+	misc_stats()

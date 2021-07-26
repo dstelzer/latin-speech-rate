@@ -8,5 +8,9 @@ stdev of SR = stdev of IR / ID = 0.81
 
 sqrt( (5.1 / 6.32)^2 + (0.033 / 6.32)^2 )
 
+Corrected ID: 6.22, stderr 0.011
+SR = IR / ID = 6.29
+stdev = 0.82
+
 MIDPHON?
 Linguistic Symposium on Romance Languages (LSRL)

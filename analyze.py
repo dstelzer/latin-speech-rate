@@ -172,7 +172,7 @@ class Analysis: # Simplest version of the analysis, takes a Counter mapping word
 		e2 = self.entropy2()
 		return e1, e2
 	
-	def calculate_reduced_e2(self, n=1, bottom=5_000, top=None, npts=100, save=None, logscale=True, bootstrap=False):
+	def calculate_reduced_e2(self, n=1, bottom=5_000, top=None, npts=100, save=None, logscale=True, bootstrap=False, cut_top=False):
 		if top is None: top = self.tokens
 		if logscale:
 			lb = np.log10(bottom)
@@ -184,6 +184,10 @@ class Analysis: # Simplest version of the analysis, takes a Counter mapping word
 		np.random.shuffle(xs) # Shuffle it to make the progress bar work better
 		data = []
 		self.inflate_corpus()
+		if cut_top:
+			self.reduce_corpus(desired_size=top, bootstrap=False)
+			self.original_corpus = self.corpus
+			self.inflate_corpus()
 		for x in tqdm(xs):
 			for _ in tqdm(range(n), leave=False, disable=(n<2)):
 				self.reduce_corpus(desired_size=x, bootstrap=bootstrap)
@@ -239,8 +243,8 @@ def confidence_test():
 def simple_test():
 	input()
 	analyzer = Analysis(log=False)
-	analyzer.load_corpus('data/latin/phi5_complete.pickle.bz2')
-	analyzer.calculate_reduced_e2(logscale=True, npts=200, n=5, save='math/latin_log_complete.pickle.bz2', bootstrap=False)
+	analyzer.load_corpus('data/latin/phi5_new.pickle.bz2')
+	analyzer.calculate_reduced_e2(logscale=True, npts=200, n=5, save='math/latin_log_new.pickle.bz2', bootstrap=False)
 
 def size_test():
 	input()
@@ -254,13 +258,13 @@ def size_test():
 def auth_test():
 	input()
 	analyzer = Analysis(log=False)
-	for auth in tqdm(list(Path('data/latin/auth_all/').glob('*.pickle.bz2'))):
+	for auth in tqdm(list(Path('data/latin/auth_new/').glob('*.pickle.bz2'))):
 		analyzer.load_corpus(auth)
-		analyzer.calculate_reduced_e2(logscale=True, npts=200, n=1, save=Path('math/latin_auth_all')/auth.name, bootstrap=False)
+		analyzer.calculate_reduced_e2(logscale=True, npts=200, n=1, save=Path('math/latin_auth_new')/auth.name, bootstrap=False)
 
 def basic():
 	an = Analysis()
-	an.load_corpus('data/latin/phi5_complete.pickle.bz2')
+	an.load_corpus('data/latin/phi5_new.pickle.bz2')
 	e1, e2 = an.do_things()
 	print(f'SE: {e1}\nID: {e2}')
 
@@ -273,5 +277,21 @@ def freqs():
 	print(min(an.unigrams.items(), key=lambda a:a[1]))
 	e1, e2 = an.do_things()
 	print(f'SE: {e1}\nID: {e2}')
+
+def misc_stats():
+	an = Analysis()
+	print('Number of syllables in top 2000 words')
+	an.load_corpus('data/latin/phi5_new.pickle.bz2')
+	an.corpus = Counter(dict(Counter(an.corpus).most_common(20000)))
+	an.count_unigrams()
+	print(len(an.unigrams))
+	print(list(an.unigrams.keys())[:100])
+	print('Most complex syllable')
+	an.load_corpus('data/latin/phi5_new.pickle.bz2')
+	an.count_unigrams()
+	tops = sorted(an.unigrams.keys(), key=len, reverse=True)
+	with open('complex_syllables.csv', 'w') as f:
+		f.write('\n'.join(tops[:1000]))
+	print('Written')
 
 if __name__ == '__main__': basic()

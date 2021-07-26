@@ -4,6 +4,7 @@ from time import sleep
 import random
 import pickle
 import bz2
+from collections import Counter
 
 from cltk.corpus.utils.formatter import assemble_phi5_author_filepaths, assemble_phi5_works_filepaths
 from cltk.corpus.utils.formatter import phi5_plaintext_cleanup
@@ -31,12 +32,12 @@ IMPORTANT_AUTHORS = {
 	'LAT1212', # Apuleius
 	'LAT0836', # Celsus
 	# The above are all authors with more than 100k words in the corpus
-	'LAT2806', # Including Justinian again just as a demonstration - remove when running on `auth` rather than `auth_all`
+#	'LAT2806', # Including Justinian again just as a demonstration - remove when running on `auth` rather than `auth_all`
 }
 
 GLOBAL_EXCLUSIONS = {
 	'LAT9999', # A bibliography file that should not be included
-	#'LAT2806', # Justinian's Digesta, which is an outlier that pulls the whole value down
+	'LAT2806', # Justinian's Digesta, which is an outlier that pulls the whole value down
 }
 
 class PHI5Corpus:
@@ -99,10 +100,14 @@ class PHI5Corpus:
 		
 		return data
 	
-	def process_and_save(self, fn, check=False, precomputed=None, overwrite=True, **kwargs):
+	def process_and_save(self, fn, check=False, precomputed=None, overwrite=True, hack_notes=False, **kwargs):
 		if fn is not None and Path(fn).exists() and not overwrite:
 			print(f'({fn} already exists, skipping it and moving on)')
 			return
+		
+		if hack_notes:
+			with open('hack_notes.csv', 'w') as f:
+				f.write('Author,Count,Prev,Next\n')
 		
 		if precomputed is None: # Allow passing in a Processor instance that's already done some analysis
 			proc = Processor()
@@ -111,7 +116,12 @@ class PHI5Corpus:
 		
 		for fn2 in tqdm(self.get_filenames(**kwargs)):
 			text = self.get_text(fn2)
+			prev = sum(proc.total_counts.values())
 			proc.count(text)
+			new = sum(proc.total_counts.values())
+			if hack_notes:
+				with open('hack_notes.csv', 'a') as f:
+					f.write(f'{fn2.stem},{prev},{new},{new-prev}\n')
 			sleep(0.25) # Return control to the system occasionally so things don't crash (just in case)
 		if check:
 			with open('phi5.full.tsv', 'w') as f:
@@ -127,14 +137,14 @@ class PHI5Corpus:
 
 def main_run_complete():
 	input()
-	PHI5Corpus().process_and_save('phi5.pickle.bz2', authorial=True)
+	PHI5Corpus().process_and_save('phi5_new.pickle.bz2', authorial=True, shuffle=False)
 
 def main_run_probability():
 	input()
 	for i in trange(10):
 		PHI5Corpus().process_and_save(f'90/{i:02d}.pickle.bz2', chance=0.9)
 
-def main_run_complete_hack():
+def main_run_complete_hack(): # Like main_run_complete but using a checkpoint
 	input()
 	c = PHI5Corpus()
 	pfn = Path('author_checkpoint.pickle.bz2')
@@ -164,6 +174,31 @@ def main_run_authors():
 		print(f'Working on {auth}')
 		c.process_and_save(f'auth_all/{auth}.pickle.bz2', authorial=True, include=IMPORTANT_AUTHORS-{auth}, precomputed=proc, overwrite=False, shuffle=True)
 
+def main_run_authors_redux():
+	input()
+	c = PHI5Corpus()
+	with bz2.open('phi5_new.pickle.bz2', 'r') as f:
+		complete = Counter(pickle.load(f))
+	for auth in tqdm(list(Path('auth_solo').glob('*.pickle.bz2'))):
+		with bz2.open(auth, 'r') as f:
+			d = Counter(pickle.load(f))
+		new = complete - d
+		if sum(new.values()) != sum(complete.values()) - sum(d.values()):
+			raise ValueError(sum(new.values()), sum(complete.values()), sum(d.values()))
+		path = Path('auth_new') / auth.name
+		with bz2.open(path, 'w') as f:
+			pickle.dump(dict(new), f)
+
+def compute_solo_author_data():
+	input()
+	path = Path('auth_solo')
+	c = PHI5Corpus()
+	# Miscellaneous
+	c.process_and_save(path/f'MISC.pickle.bz2', authorial=True, exclude=IMPORTANT_AUTHORS, overwrite=False, shuffle=True)
+	# Authors
+	for auth in tqdm(IMPORTANT_AUTHORS):
+		c.process_and_save(path/f'{auth}.pickle.bz2', authorial=True, include=(auth,), overwrite=False, shuffle=True)
+
 def author_data():
 	input()
 	data = PHI5Corpus().get_author_data()
@@ -177,14 +212,41 @@ def author_data():
 def author_data_2():
 	input()
 	with bz2.open('phi5.pickle.bz2', 'r') as f:
-		d = pickle.load(f)
-	c1, c2 = len(d), sum(d.values())
+		d_tot = Counter(pickle.load(f))
+	c1, c2 = len(d_tot), sum(d_tot.values())
 	print('Total', c1, c2)
 	for auth in Path('auth').glob('*.pickle.bz2'):
 		with bz2.open(auth, 'r') as f:
-			d = pickle.load(f)
+			d = Counter(pickle.load(f))
+		d2 = d_tot - d
+		t1, t2 = len(d2), sum(d2.values())
+		print(auth.stem, t1, t2)
+	for auth in ['author_checkpoint.pickle.bz2']:
+		with bz2.open(auth, 'r') as f:
+			d = Counter(pickle.load(f))
 		t1, t2 = len(d), sum(d.values())
-		print(auth.stem, c1-t1, c2-t2)
+		print(auth, t1, t2)
 	input()
 
-if __name__ == '__main__': author_data_2()
+def author_data_3():
+	with bz2.open('phi5_new.pickle.bz2', 'r') as f:
+		d_tot = pickle.load(f)
+	c1, c2 = len(d_tot), sum(d_tot.values())
+	print('Total', c1, c2)
+	for auth in Path('auth_solo').glob('*.pickle.bz2'):
+		with bz2.open(auth, 'r') as f:
+			d = pickle.load(f)
+		t1, t2 = len(d), sum(d.values())
+		print(auth.stem, t1, t2)
+		c1 -= t1; c2 -= t2
+	print('Unaccounted for', c1 if c1>0 else 0, c2)
+	input()
+
+def author_data_misc():
+	with bz2.open('author_checkpoint.pickle.bz2', 'r') as f:
+		d = pickle.load(f)
+	c1, c2 = len(d), sum(d.values())
+	print('Misc', c1, c2)
+	input()
+
+if __name__ == '__main__': author_data_3()

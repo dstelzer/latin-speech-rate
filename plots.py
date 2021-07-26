@@ -50,12 +50,12 @@ class Dataset:
 		self.pxs = np.logspace(xnl, xxl, npts)
 		self.pys = self.func(self.pxs, *self.popt)
 	
-	def draw_curve(self, format='-r'):
-		plt.plot(self.pxs, self.pys, format, label='Fitted Curve')
+	def draw_curve(self, format='-r', label='Fitted Curve'):
+		plt.plot(self.pxs, self.pys, format, label=label)
 	
-	def draw_asymptote(self, line='--', color='g', include_tick=True):
-		y = self.popt[0]
-		plt.axhline(y=y, linestyle=line, color=color, label='Prediction')
+	def draw_asymptote(self, line='--', color='g', include_tick=True, override=None, label='Prediction'):
+		y = self.popt[0] if (override is None) else override
+		plt.axhline(y=y, linestyle=line, color=color, label=label)
 		if include_tick:
 			newticks = [y]
 			plt.yticks(list(plt.yticks()[0]) + newticks) # Add an extra tick to the y-axis
@@ -79,46 +79,87 @@ class CSVDataset(Dataset):
 
 def basic():
 	plt.rcParams.update({'font.size': 16})
-	d = Dataset('math/latin_log_complete.pickle.bz2')
+	d = Dataset('math/latin_log_complete_new.pickle.bz2')
 	d.fit_curve()
 	d.mark_curve(xmax = max(d.xs)*10)
 #	d.draw_data('r.')
 	plt.plot(d.xs, d.ys, '.', color='#ff7070', label='With Digesta')
 	print(d.popt)
 	
-	d2 = Dataset('math/latin_log.pickle.bz2')
+	d2 = Dataset('math/latin_log_new.pickle.bz2')
 	d2.fit_curve()
-	d2.mark_curve(xmax = max(d.xs)*10)
+	d2.mark_curve(xmax = max(d2.xs)*10)
 #	d2.draw_data('b.')
 	plt.plot(d2.xs, d2.ys, '.', color='#70c4ff', label='Without Digesta')
 	print(d2.popt)
 	
-	d.draw_asymptote('--', 'r', False)
-	d2.draw_asymptote('--', 'b')
+	d.draw_asymptote('--', 'r', False, label=None)
+	d2.draw_asymptote('--', 'b', False, label=None)
 	
-	d.draw_curve('-k')
-	d2.draw_curve('-k')
+	d.draw_curve('-k', label=None)
+	d2.draw_curve('-k', label=None)
 	
 	plt.xlabel('Corpus Size (tokens)')
 	plt.ylabel('Information Density (bits/syl)')
 	plt.legend(loc='lower right')
 	plt.gca().yaxis.set_major_formatter(StrMethodFormatter('{x:,.2f}')) # 2 decimal places
-	d.show()
+	d2.show()
+
+def test_extrapolation():
+	plt.rcParams.update({'font.size': 14})
+	
+#	d = Dataset('math/german_log.pickle.bz2')
+#	d.fit_curve()
+#	d.mark_curve(xmax = max(d.xs)*10)
+#	d.draw_data('r.')
+#	plt.plot(d.xs, d.ys, '.', color='#ff7070', label='German Full')
+#	d.draw_asymptote('--', 'r')
+#	d.draw_curve('-r')
+#	print(d.popt)
+	
+	d2 = Dataset('math/english_log.pickle.bz2')
+	d2.fit_curve()
+	d2.mark_curve(xmax = max(d2.xs)*10)
+	plt.plot(d2.xs, d2.ys, '.', color='#7070ff', label='English')
+	d2.draw_asymptote('-', 'b', False, label=None)
+	d2.draw_curve('-k', label=None)
+	print(d2.popt)
+	print(max(d2.ys))
+	d2.draw_asymptote('--', 'r', False, override=6.98057, label=None)
+	
+	d3 = Dataset('math/german_log.pickle.bz2')
+	d3.fit_curve()
+	d3.mark_curve(xmax = max(d3.xs)*10)
+	plt.plot(d3.xs, d3.ys, '.', color='#70c070', label='German')
+	d3.draw_asymptote('-', 'g', False, label=None)
+	d3.draw_curve('-k')
+	print(d3.popt)
+	print(max(d3.ys))
+	d3.draw_asymptote('--', 'r', False, override=6.082567690505002, label="Previous Result")
+	plt.legend()
+	plt.gca().yaxis.set_major_formatter(StrMethodFormatter('{x:,.2f}')) # 2 decimal places
+	plt.xlabel('Corpus Size (tokens)')
+	plt.ylabel('Information Density (bits/syl)')
+	
+	d3.show()
 
 def figures_for_presentation():
 	plt.rcParams.update({'font.size': 16})
 	
-	d = Dataset('math/latin_log.pickle.bz2')
+	d = Dataset('math/latin_log_new.pickle.bz2')
 	d.fit_curve()
 	d.mark_curve(xmax = max(d.xs)*100)
 #	d.draw_data('b.')
-	plt.plot(d.xs, d.ys, '.', color='#70c4ff', label='Data')
+	plt.plot(d.xs, d.ys, '.', color='#70c4ff', label='Data') # Blue for Latin
+#	plt.plot(d.xs, d.ys, '.', color='#70c070', label='Data') # Green for German
 	d.draw_curve('-k')
 #	plt.plot(d.pxs, d.pys, '-k', alpha=0)
-	d.draw_asymptote('--', 'r')
+	d.draw_asymptote('--', 'b', False)
 #	plt.axhline(y=d.popt[0], linestyle='--', color='r', alpha=0)
 	plt.xlabel('Corpus Size (tokens)')
 	plt.ylabel('Information Density (bits/syl)')
+	print(d.popt)
+	print(max(d.ys))
 	
 	plt.gca().yaxis.set_major_formatter(StrMethodFormatter('{x:,.2f}')) # 2 decimal places
 #	newticks = [6.4]
@@ -179,16 +220,17 @@ def compare_latin_authors():
 	plt.rcParams.update({'font.size': 16})
 	vals = []
 	
-	d0 = Dataset('math/latin_log.pickle.bz2')
+	d0 = Dataset('math/latin_log_new.pickle.bz2')
 	d0.fit_curve()
 	
-	for auth in Path('math/latin_auth').glob('*.pickle.bz2'): # Use auth_all to include the Digesta
-		if '0474' in auth.stem: continue # Remove Cicero if you want
+	for i, auth in enumerate(Path('math/latin_auth_new').glob('*.pickle.bz2')): # Use auth_all to include the Digesta
+	#	if '0474' in auth.stem: continue # Remove Cicero if you want
 		d = Dataset(auth)
 		d.fit_curve()
 		d.mark_curve(xmax=max(d0.xs)*10, npts=500)
 		# old: random.choice('oDv^s')
-		d.draw_data('.'+random.choice('bgmyc'))
+#		d.draw_data('.'+random.choice('bgmyc'))
+		d.draw_data('.'+'bgmycbgmycbgcm'[i])
 		d.draw_curve('k')
 #		d.draw_asymptote('--', 'k', include_tick=False)
 		vals.append(d.popt[0])
@@ -197,7 +239,7 @@ def compare_latin_authors():
 #	d0.mark_curve(xmax=max(d0.xs)*10, npts=500)
 #	d0.draw_data('.r')
 #	d0.draw_curve('-k')
-	d0.draw_asymptote('-', 'r')
+	d0.draw_asymptote('-', 'r', False)
 	
 	plt.xlabel('Corpus Size (tokens)')
 	plt.ylabel('Information Density (bits/syl)')
@@ -222,4 +264,4 @@ def latin_sylfreq_histogram():
 	plt.plot(data[::-1])
 	plt.show()
 
-if __name__ == '__main__': figures_for_presentation()
+if __name__ == '__main__': basic()
