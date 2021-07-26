@@ -106,7 +106,7 @@ class Processor:
 		for word in self.process(text):
 			if not word: continue
 			data[word] += 1
-		self.total_counts |= data
+		self.total_counts += data
 	
 	def save(self, fn): # Save counts to a file
 		opener = bz2.open if str(fn).endswith('bz2') else open # Make sure we open the file the right way
