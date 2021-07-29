@@ -280,7 +280,7 @@ def freqs():
 
 def misc_stats():
 	an = Analysis()
-	print('Number of syllables in top 2000 words')
+	print('Number of syllables in top 20000 words')
 	an.load_corpus('data/latin/phi5_new.pickle.bz2')
 	an.corpus = Counter(dict(Counter(an.corpus).most_common(20000)))
 	an.count_unigrams()

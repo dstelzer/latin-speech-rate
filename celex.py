@@ -93,7 +93,7 @@ def german_new():
 
 def misc_stats():
 	an = CelexAnalysis(**GERMAN, log=False)
-	print('Number of syllables in top 2000 words')
+	print('Number of syllables in top 20000 words')
 	an.load_corpus('data/german.pickle.bz2')
 	an.corpus = Counter(dict(Counter(an.corpus).most_common(20000)))
 	an.count_unigrams()
