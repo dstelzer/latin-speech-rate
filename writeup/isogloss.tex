@@ -7,8 +7,9 @@
 \usepackage{diagbox}
 \usepackage{graphicx}
 \graphicspath{ {./images/} }
-\usepackage[style=authoryear-icomp,natbib=true,sortcites=true]{biblatex}% natbib=true so we can use natbib commands with biblatex
+\usepackage[style=authoryear-icomp,natbib=true,sortcites=true,maxbibnames=99]{biblatex}% natbib=true so we can use natbib commands with biblatex
 % Also: authoryear-icomp is used so that when you cite the same author with different years, you get "according to Herberger (2002, 2004)" rather than "according to Herberger (2002), Herberger (2004)"
+% maxbibnames=99 lists all full names in the bibliography rather than using "et al", as specified in Isogloss's formatting guidelines
 \addbibresource{isogloss.bib}
 
 \usepackage{xpatch}
@@ -22,7 +23,8 @@
 \pagestyle{fancy}
 \fancyhead{}
 \fancyhead[LE]{\thepage \hspace{3mm} \small Isogloss YEAR, ISSUE/NR}
-\fancyhead[RE]{\small Daniel Stelzer}
+%\fancyhead[RE]{\small Daniel Stelzer}
+\fancyhead[RE]{\small{} [Name]}
 \fancyhead[LO]{\small How fast did Cicero speak?}
 \fancyhead[RO]{\small Isogloss YEAR, 1/2 \normalsize \thepage}
 \fancyfoot{}
@@ -72,7 +74,7 @@
 % https://tex.stackexchange.com/q/121865/169121
 \hypersetup{ % TODO is this okay?
 	colorlinks,
-	linkcolor={red!60!black},
+	linkcolor={red!75!black},
 	citecolor={blue!50!black},
 	urlcolor={blue!80!black}
 }
@@ -92,8 +94,10 @@
 \makeatother
 
 \title{{\Huge{}How fast did Cicero speak?}\\{\Large{}The speech rate of Classical Latin versus its Romance descendants}}
-\author{Daniel Stelzer}
-\affil{University of Illinois at Urbana-Champaign\\stelzer3@illinois.edu} 
+%\author{Daniel Stelzer}
+\author{[Name]}
+%\affil{University of Illinois at Urbana-Champaign\\stelzer3@illinois.edu}
+\affil{[Affiliation]\\[Email]}
 \setlength{\affilsep}{1pt}
 \date{}
 
@@ -122,7 +126,7 @@
 
 \vspace{1cm}
 
-\noindent \textbf{How to cite} Author, Title, YEAR
+\noindent \textbf{How to cite} Leave blank
 
 \vspace{1.5cm}
 
@@ -131,8 +135,13 @@
  	\line(1,0){430}
 \end{center}
 \vspace{-0,3cm}
-\noindent While languages convey significantly different amounts of both information per syllable and syllables per second, recent research suggests that the product of these values---information conveyed per second---is much less variable. Using new methods of extrapolation and resampling, we were able to estimate the information conveyed per syllable in a written Classical Latin corpus. We were then able to use this cross-linguistic consistency to estimate the natural speech rate of Classical Latin, a language that hasn't been natively spoken for thousands of years. Our analysis suggests that it was spoken at a rate significantly slower than modern Romance languages, fairly similar to modern English; a high-level consideration of historical sound changes in Romance supports this conclusion, lending additional credence to our results. \\
-\vspace{-0,4cm}
+\noindent While languages convey significantly different amounts of both information per syllable and syllables per second, recent research suggests that the product of these values---information conveyed per second---is much less variable. Using new methods of extrapolation and resampling, we were able to estimate the information conveyed per syllable in a written Classical Latin corpus. We were then able to use this cross-linguistic consistency to estimate the natural speech rate of Classical Latin, a language that hasn't been natively spoken for thousands of years. Our analysis suggests that it was spoken at a rate significantly slower than modern Romance languages, fairly similar to modern English; a high-level consideration of historical sound changes in Romance supports this conclusion, lending additional credence to our results.
+
+\vspace{5mm}
+
+\noindent \textbf{Keywords:} Information density; speech rate; Latin; information theory; resampling
+
+\vspace{4mm}
 \begin{center}
 	\line(1,0){430}
 \end{center}
@@ -212,14 +221,14 @@ Where \(c\) is some representation of the context. In \citeauthor{oh}'s model, s
 ID = - \sum_{\substack{\textrm{syllable},\\\textrm{context}}} P(\textrm{context, syllable}) \log \frac{P(\textrm{context, syllable})}{P(\textrm{context})}
 \end{equation}
 
-Our implementation follows \posscite[39]{oh} method exactly, using frequencies in a large corpus to approximate signal probabilities. Notably, we only consider context within a single word, not between words. This limitation was imposed by the corpora \citeauthor{oh} used, many of which only provide individual word frequencies; we continue with it both to ensure our results can be compared directly against \posscite{coupé}, and to avoid the question of which boundaries (phrase, clause, sentence, paragraph, book?) context should be able to cross\footnote{See, however, the comments in section~\ref{sec:concl}.}.
+Our implementation follows \posscite[39]{oh} method exactly, using frequencies in a large corpus to approximate signal probabilities. Notably, we only consider context within a single word, not between words. This limitation was imposed by the corpora \citeauthor{oh} used, many of which only provide individual word frequencies; we continue with it both to ensure our results can be compared directly against \posscite{coupé}, and to avoid the question of which boundaries (phrase, clause, sentence, paragraph, book) context should be able to cross\footnote{See, however, the comments in section~\ref{sec:concl}.}.
 
 \subsection{Representation}
 \label{subsec:repr}
 
 The input to the bigram model discussed in \ref{subsec:entropy} is a broad\footnote{Though since the entropy is calculated on the syllable level rather than the phoneme level, and context is taken into account, the narrowness of the transcription is less important than for Shannon entropy.} phonemic representation, with syllable boundaries marked. Since our corpus consists of plain text, we need a way of converting it to this phonemic representation. We accomplish this in three steps: augmenting the original orthography with additional data, converting the augmented orthography to a phonemic representation, and breaking this representation into syllables.
 
-Fortunately, Classical Latin orthography is very close to phonemic. The Latin alphabet was still being modified during the Classical era, and deliberately archaizing spellings were rare. This means that, for the most part, Classical orthography is thought to accurately represent the way the language was spoken at that time \citep[9]{allen}. However, some phonemic distinctions remain unrepresented, such as vowel quantity and vowels versus semivowels:
+Fortunately, Classical Latin orthography is very close to phonemic. The Latin alphabet was still being modified during the Classical era, and deliberately-archaic spellings were rare. This means that, for the most part, Classical orthography is thought to accurately represent the way the language was spoken at that time \citep[9]{allen}. However, some phonemic distinctions remain unrepresented, such as vowel quantity and vowels versus semivowels:
 
 \begin{exe}
 \ex \textsc{alivm} \ipa{a.li.um} ``another''
@@ -251,22 +260,22 @@ The syllabified, near-phonemic transcription can then be converted into unigram 
 
 \subsection{Extrapolation}
 
-In previous studies, \citet{coupé} and \citet{oh} mostly used corpora with tens or hundreds of millions of tokens\footnote{See \cite[30-31]{oh} for a list of corpora used. Notably, while Oh did use some corpora that were significantly smaller (such as Robert's Wolof corpus), this likely affected the accuracy of the entropy estimates.}. However, the entire surviving corpus of Classical Latin literature contains fewer than 7 million tokens \citep{phi}---hundreds of times smaller than English Wikipedia\footnote{Over 3.9 billion tokens at the time of writing, according to the ``Size of Wikipedia'' page \citep{wiki}.}, and on the same order of magnitude as a single month of the New York Times\footnote{A back-of-the-envelope calculation, based on popularly-quoted figures of averaging 150 articles per weekday, 250 per Sunday, and 622 words per article.}. The first iteration of our study was limited to an even smaller corpus, with less than 2 million tokens. And while it seems clear that a larger corpus results in a more accurate estimate, it's not clear \emph{how} large of a corpus is needed, or whether ours is sufficient.
+In previous studies, \citet{coupé} and \citet{oh} mostly used corpora with tens or hundreds of millions of tokens\footnote{See \cite[30-31]{oh} for a list of corpora used. Notably, while Oh did use some corpora that were significantly smaller (such as Robert's Wolof corpus), this likely affected the accuracy of the entropy estimates.}. However, the entire surviving corpus of Classical Latin literature contains fewer than 7 million tokens \citep{phi}---hundreds of times smaller than English Wikipedia\footnote{Over 3.9 billion tokens at the time of writing, according to the ``Size of Wikipedia'' page \citep{wiki}.}, and on the same order of magnitude as a single month of the New York Times\footnote{A back-of-the-envelope calculation, based on popularly-quoted figures of averaging 150 articles per weekday, 250 per Sunday, and 622 words per article.}. The first iteration of our study was limited to an even smaller corpus, with less than 2 million tokens. And while it seems clear that a larger corpus results in a more accurate estimate, it's not clear \emph{how} large of a corpus is necessary, or whether ours is sufficient.
 
 One classic solution to the problem of limited data is bootstrapping, a way of artificially enlarging a dataset \citep{oh,efron}. But as \citet[55-56]{oh} demonstrates, bootstrapping does not seem to be a good tool for estimating entropy. In a natural-language corpus, Zipf's law (and its various extensions) predicts that a significant number of types will only occur once in the corpus---and even more valid types will never appear at all \citep{davis}. In Latin, for example, the word \emph{aud\=\i{}ver\=as} ``you had heard'' appears only once\footnote{Terence's \emph{Phormio}, line 573: ``So why did you stay there for so long, I must ask, once \emph{you had heard} the news?''}, and its relative \emph{aud\=\i{}verint} ``they might have heard'' is completely unattested, presumably by sheer accident. Bootstrapping a dataset like this will very often change a frequency of 1 to 0, but can never change a frequency of 0 to 1, skewing the distribution. This may be the cause of the instability noted by \citet[56]{oh}.
 
-\begin{figure}[h]
+\begin{figure}[p]
 \centering
-\noindent\includegraphics[width=\linewidth]{extrapolationsingle}
 \caption{The convergence of estimated information density for German, approximated by equation~\ref{eq:hyperbola}.}
 \label{fig:exsingle}
+\noindent\includegraphics[width=\linewidth]{extrapolation_single}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[p]
 \centering
-\noindent\includegraphics[width=\linewidth]{extrapolation}
 \caption{Extrapolated information density for small sub-corpora of English and German, compared to the result calculated from the entire corpus.}
 \label{fig:exdouble}
+\noindent\includegraphics[width=\linewidth]{extrapolation_double}
 \end{figure}
 
 Notably, however, the issues with bootstrapping arise from sampling with replacement. By sampling \emph{without} replacement, we can ensure the distribution is preserved. The result is always smaller than the original corpus, but by functionally discarding tokens at random, we can quite reliably create a smaller corpus that maintains the proper distribution. \citet[57]{oh} uses this technique to demonstrate that estimated information density increases sharply with corpus size, then appears to converge (see figure~\ref{fig:exsingle}). We replicated her results for English and German, randomly discarding from the corpora to create smaller sub-corpora and calculating the information density from them. We then attempted to fit a curve to the convergence. In particular, the hyperbola shown in equation~\ref{eq:hyperbola} fit extremely well; it relates the estimated entropy (\(y\)) to the corpus size (\(x\)) with four parameters tuned through least-squares fitting. The results are shown in figure~\ref{fig:exsingle}.
@@ -297,6 +306,8 @@ However, most of these 362 authors have relatively little contribution---for exa
 
 \begin{table}[h]
 \centering
+\caption{The composition of the corpus.}
+\label{tab:corpus}
 \begin{tabular}{|c|c|c|c|c|}
 \hline
 \textbf{Author} & \textbf{Genre} & \textbf{Century} & \textbf{Types} & \textbf{Tokens} \\\hline
@@ -318,8 +329,6 @@ Apuleius & Novel & 2nd CE & 30,735 & 103,901 \\\hline
 Celsus & Religion & 2nd CE & 15,736 & 102,035 \\\hline
 Others & & & 189,907 & 2,153,017 \\\hline
 \end{tabular}
-\caption{The composition of the corpus.}
-\label{tab:corpus}
 \end{table}
 
 Using this corpus for analysis, and these fifteen authors for jackknifing, two outliers immediately became apparent.
@@ -328,9 +337,9 @@ The first involves Justinian. The \emph{Digesta} of Justinian is one of the late
 
 \begin{figure}[h]
 \centering
-\noindent\includegraphics[width=\linewidth]{digesta}
 \caption{Estimated information density with and without the \emph{Digesta}.}
 \label{fig:digesta}
+\noindent\includegraphics[width=\linewidth]{digesta}
 \end{figure}
 
 The second involves Cicero. He was an absurdly prolific writer, and due to the praise of early Christian church fathers, his works were preserved better than most others'---it's estimated that over 75\% of the surviving writings from his lifetime are his \citep{harrison}. Even looking at other time periods, his works make up over 18\% of our corpus. As such, he has a much greater impact on our information density estimate than most other authors, through sheer volume (as can be seen in figure~\ref{fig:jackknifing}).
@@ -341,18 +350,18 @@ Using this corpus (with Justinian excluded but Cicero included), the results of 
 
 The results of author jackknifing are shown in figure~\ref{fig:jackknifing}. The mean of the extrapolated entropy of the fourteen resampled corpora is 6.220 bits per syllable, with a standard deviation of 0.0198. This standard deviation approximates how much any particular lost author could impact our results, and we take it as a measure of the uncertainty in our estimate.
 
-\begin{figure}[h]
+\begin{figure}[p]
 \centering
-\noindent\includegraphics[width=\linewidth]{latin}
 \caption{Estimated information density from the entire corpus.}
 \label{fig:results}
+\noindent\includegraphics[width=\linewidth]{latin}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[p]
 \centering
-\noindent\includegraphics[width=\linewidth]{jackknifing}
 \caption{Results of author jackknifing. The visible outlier (in purple) is the corpus without Cicero.}
 \label{fig:jackknifing}
+\noindent\includegraphics[width=\linewidth]{jackknifing}
 \end{figure}
 
 According to \citet{coupé}, the mean information rate across languages is 39.15 bits per second, with a standard deviation of 5.10. From this, we calculate a reconstructed speech rate:
@@ -369,13 +378,13 @@ Notably, the uncertainty in our information density value (\(\sigma_{ID}\)) is s
 
 Compared to \posscite{coupé} empirical data, these results---6.29 syllables per second with a standard deviation of 0.82---seem quite reasonable. The rate is fairly similar to that of English, with some other languages being much faster and others much slower. The uncertainty is significantly smaller than many of the differences between languages, showing that our results are precise enough to be meaningful. And the uncertainty is also fairly similar to the variations reported in \citeauthor{coupé}'s experiment.
 
-Figure~\ref{fig:violin1} compares our reconstructed speech rate against the data gathered by \citet{coupé} for Vietnamese, English, and Japanese. Tickmarks indicate the mean and one standard deviation above and below; for living languages, the ``violin'' shows the distribution of measurements of actual speech rate, while for Latin, it's approximated by a normal distribution with appropriate mean and standard deviation.
+Figure~\ref{fig:violin1} compares our reconstructed speech rate for Classical Latin against the data gathered by \citet{coupé} for Vietnamese, English, and Japanese. Tickmarks indicate the mean and one standard deviation above and below; for living languages, the ``violin'' shows the distribution of measurements of actual speech rate, while for Latin, it's approximated by a normal distribution with appropriate mean and standard deviation.
 
-\begin{figure}[h]
+\begin{figure}[p]
 \centering
-\noindent\includegraphics[width=\linewidth]{{violinglobal}}
-\caption{Our reconstructed speech rate for Latin, compared to measured speech rates of living languages.}
+\caption{Our reconstructed speech rate for Classical Latin, compared to measured speech rates of living languages.}
 \label{fig:violin1}
+\noindent\includegraphics[width=\linewidth]{violin_global}
 \end{figure}
 
 \subsection{Comparison}
@@ -384,17 +393,19 @@ Now that we know our estimated speech rate is plausible for a language in genera
 
 Notably, Latin seems to be spoken significantly slower than all the Romance languages tested, often by at least one standard deviation. Spanish, the fastest of them, is more than an entire syllable per second faster.
 
-\begin{figure}[h]
+\begin{figure}[p]
 \centering
-\noindent\includegraphics[width=\linewidth]{{violinromance}}
-\caption{The speech rate of Latin compared to modern Romance languages.}
+\caption{The speech rate of Classical Latin compared to modern Romance languages.}
 \label{fig:violin2}
+\noindent\includegraphics[width=\linewidth]{violin_romance}
 \end{figure}
 
 The next question is, are there phonological reasons for this? In other words, are there significant phonological differences between Classical Latin and its modern descendants that would explain this significant difference in speech rate? In table~\ref{tab:phono} we reproduce some phonological data from \citet{oh} for comparison. ``C'', ``V'', and ``T'' indicate the size of the inventory of consonants, vowels, and tones/stress features; ``Complexity'' and ``Index'' are measures of syllable complexity proposed by \citet{wals} and \citet{lapsyd} respectively (the ``index'' being roughly equivalent to the maximum number of segments in a single syllable); and ``SE'' and ``ID'' are the Shannon entropy and information density reported by \citet{oh}, both in bits per syllable. Size of syllable inventory, also reported by Oh, is not included due to difficulty in reproducing her results.
 
 \begin{table}[h]
 \centering
+\caption{Phonological statistics for Classical Latin compared to modern Romance languages. Romance data from \cite[44-45]{oh}.}
+\label{tab:phono}
 \begin{tabular}{|c|c|c|c|c|c|c|c|}
 \hline
 \textbf{Language} & \textbf{C} & \textbf{V} & \textbf{T} & \textbf{Complexity} & \textbf{Index} & \textbf{SE} & \textbf{ID} \\\hline
@@ -404,8 +415,6 @@ French & 22 & 15 & 0 & Complex & 7 & 8.39 & 6.68 \\\hline
 Italian & 27 & 7 & 1 & Complex & 6 & 8.32 & 5.29 \\\hline
 Spanish & 27 & 5 & 1 & Moderate & 5 & 8.32 & 5.43 \\\hline
 \end{tabular}
-\caption{Phonological statistics for Classical Latin compared to modern Romance languages. Romance data from \cite[44-45]{oh}.}
-\label{tab:phono}
 \end{table}
 
 Notably, the Shannon entropy\footnote{That is, the syllable entropy without context, as formulated in equation~\ref{eqn:shannon}.} of Classical Latin is much closer to that of modern Romance languages than the information density. We attribute this mainly to the presence of stress. Phonemic stress, as found in many Romance languages, increases the number of possible syllables immensely (since, for example, stressed \emph{\'a} and unstressed \emph{a} become phonologically distinct syllables). This increase in the syllable inventory then greatly increases the Shannon entropy. But the information density incorporates context as well, and in context, stress matters much less---in stress-accent languages, there tends to be one and only one ictus per word, not an independent ``stressed'' or ``unstressed'' property for each syllable. Latin lacks phonemic stress but has phonemic vowel length, which is a property of each individual syllable rather than the word: \emph{pila} ``ball'', \emph{p\=\i{}la} ``mortar'', \emph{pil\=a} ``with a ball'', \emph{p\=\i{}l\=a} ``with a mortar''. So while the effects of stress and vowel length on the Shannon entropy are similar, their effects on the information density are very different.
@@ -418,12 +427,12 @@ Leaving aside \posscite{lapsyd} index, we instead suggest a broader look at the 
 
 \begin{figure}[h]
 \centering
-\noindent\includegraphics[width=\linewidth]{vowelchange}
 \caption{The vowel inventories of Classical Latin (left) and early Romance (right).}
 \label{fig:vowels}
+\noindent\includegraphics[width=\linewidth]{vowelchange}
 \end{figure}
 
-\textbf{Vowel changes}: Classical Latin had twelve phonemic monophthongs, \ipa{i e a o u} with a binary length distinction, and at least\footnote{Many analyses, such as \citet{allen}, consider other diphthongs phonemic as well, but all analyses that I'm aware of include at least these three. In this paper, we follow \citeauthor{allen} for most purposes (including table~\ref{tab:phono}), but \citet{alkire} specifically in discussions of historical phonology (including figure~\ref{fig:vowels}).} three phonemic diphthongs, \ipa{a\textsubarch{e} o\textsubarch{e} a\textsubarch{u}}. Early in Proto-Romance, the length distinction became a quality distinction, and a series of mergers resulted in seven phonemic monophthongs \ipa{i e E a O o u} and one diphthong \ipa{a\textsubarch{u}}, as shown in figure~\ref{fig:vowels}. \citet{alkire} refer to this as the ``Great Merger'', and its effects can be seen in almost all Romance languages\footnote{The famous exception being Sardinian.}; most of them underwent further mergers, especially in unstressed position \citep{alkire}. The main result of this was to cut the number of possible syllables nearly in half.
+\textbf{Vowel changes}: Classical Latin had twelve phonemic monophthongs, \ipa{i y e a o u} with a binary length distinction, and at least\footnote{Many analyses, such as \citet{allen}, consider other diphthongs phonemic as well, but all analyses that we're aware of include at least these three. In this paper, we follow \citeauthor{allen} for most purposes (including table~\ref{tab:phono}), but \citet{alkire} specifically in discussions of historical phonology (including figure~\ref{fig:vowels}).} three phonemic diphthongs, \ipa{a\textsubarch{e} o\textsubarch{e} a\textsubarch{u}}. Early in Proto-Romance, the length distinction became a quality distinction, and a series of mergers resulted in seven phonemic monophthongs \ipa{i e E a O o u} and one diphthong \ipa{a\textsubarch{u}}, as shown in figure~\ref{fig:vowels}. \citet{alkire} refer to this as the ``Great Merger'', and its effects can be seen in almost all Romance languages\footnote{The famous exception being Sardinian.}; most underwent further mergers, especially in unstressed position \citep{alkire}. The main result of this was to cut the number of possible syllables nearly in half.
 
 \textbf{Cluster breaking}: While Classical Latin allowed \ipa{s} before stops in onsets, Western Romance varieties historically did not.
 
@@ -482,7 +491,7 @@ In summary, we believe there are several historical reasons to expect modern Rom
 
 In this study, we used a variety of tools to analyze the information density of Classical Latin from a written corpus. Applying our new methods of extrapolation and author jackknifing, we came up with an information density of 6.216 bits per syllable, with a standard error of 0.198. Applying these values to \posscite{coupé} information rate distribution, we predict a mean speech rate of 6.29 syllables per second, with a standard deviation of 0.82---significantly slower than the modern Romance languages tested by \citeauthor{coupé}. We believe these results make sense, based on a broad overview of historical developments in Romance.
 
-We believe these methods of extrapolation can be applied to other corpora. While we demonstrated that 2 million tokens is enough, though, more research is required to determine how small a corpus is sufficient for a good extrapolation. Future work might put a lower bound on this, and potentially apply it to other languages with less written data available.
+We believe these methods of extrapolation can be applied to other corpora. While we demonstrated that 2 million tokens is enough, more research is required to determine how small a corpus is sufficient for a good extrapolation. Future work might put a lower bound on this, and potentially apply it to other languages with less written data available.
 
 We've also looked at a handful of prominent historical sound changes to explain our results, but in a language family as well-understood as Romance, we've barely scratched the surface of the potential. With a more detailed investigation at one particular language's historical phonology, it might be possible to trace the evolution of the language's speech rate over time and quantify the effect of particular phonological changes.
 
@@ -492,9 +501,11 @@ The recent advances in the study of linguistic information are exciting, and we 
 
 \section*{Acknowledgements}
 
-We would like to thank Ryan Shosted for advice and guidance on every part of this project, Yoon Mi Oh for guidance on the entropy calculations, and Tim Stelzer and Andrew Stelzer for mathematical advice.
+%We would like to thank Ryan Shosted for advice and guidance on every part of this project, Yoon Mi Oh for guidance on the entropy calculations, and Tim Stelzer and Andrew Stelzer for mathematical advice.
 
-We would also like to thank the organizers and reviewers of the LSRL 51 conference where this work was first presented, and Keith Tse, Benjamin Tucker, William Balla-Johnson, José Ignacio Hualde, and Ed Rubin for their questions and comments at that conference.
+%We would also like to thank the organizers and reviewers of the LSRL 51 conference where this work was first presented, and Keith Tse, Benjamin Tucker, William Balla-Johnson, José Ignacio Hualde, and Ed Rubin for their questions and comments at that conference.
+
+[Acknowledgements removed for anonymity in review.]
 
 %\nocite{*}
 \label{sec:refs}

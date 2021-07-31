@@ -189,6 +189,7 @@ def main_run_authors_redux():
 		with bz2.open(path, 'w') as f:
 			pickle.dump(dict(new), f)
 
+# Make a corpus for each author individually
 def compute_solo_author_data():
 	input()
 	path = Path('auth_solo')
@@ -199,6 +200,7 @@ def compute_solo_author_data():
 	for auth in tqdm(IMPORTANT_AUTHORS):
 		c.process_and_save(path/f'{auth}.pickle.bz2', authorial=True, include=(auth,), overwrite=False, shuffle=True)
 
+# Save an overview of different authors' tokens
 def author_data():
 	input()
 	data = PHI5Corpus().get_author_data()
@@ -209,6 +211,8 @@ def author_data():
 			f.write(f'{name}\t{id}\t{words}\n')
 	print('Done')
 
+# Test calculating different authors' types and tokens.
+# THIS ONE DOES NOT WORK PROPERLY
 def author_data_2():
 	input()
 	with bz2.open('phi5.pickle.bz2', 'r') as f:
@@ -228,6 +232,8 @@ def author_data_2():
 		print(auth, t1, t2)
 	input()
 
+# Test calculating different authors' types and tokens.
+# THIS ONE WORKS
 def author_data_3():
 	with bz2.open('phi5_new.pickle.bz2', 'r') as f:
 		d_tot = pickle.load(f)
@@ -249,4 +255,4 @@ def author_data_misc():
 	print('Misc', c1, c2)
 	input()
 
-if __name__ == '__main__': author_data_3()
+if __name__ == '__main__': author_data()

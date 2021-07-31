@@ -77,8 +77,8 @@ class CSVDataset(Dataset):
 		self.func = hyperbolic
 		self.p0 = np.array([max(self.ys), 300, -1, 1])
 
-def basic():
-	plt.rcParams.update({'font.size': 16})
+def with_without_digesta():
+	plt.rcParams.update({'font.size': 12})
 	d = Dataset('math/latin_log_complete_new.pickle.bz2')
 	d.fit_curve()
 	d.mark_curve(xmax = max(d.xs)*10)
@@ -103,10 +103,12 @@ def basic():
 	plt.ylabel('Information Density (bits/syl)')
 	plt.legend(loc='lower right')
 	plt.gca().yaxis.set_major_formatter(StrMethodFormatter('{x:,.2f}')) # 2 decimal places
-	d2.show()
+	
+	plt.gcf().set_size_inches(8, 5)
+	d2.show() # digesta.pdf
 
-def test_extrapolation():
-	plt.rcParams.update({'font.size': 14})
+def double_extrapolation():
+	plt.rcParams.update({'font.size': 12})
 	
 #	d = Dataset('math/german_log.pickle.bz2')
 #	d.fit_curve()
@@ -117,7 +119,7 @@ def test_extrapolation():
 #	d.draw_curve('-r')
 #	print(d.popt)
 	
-	d2 = Dataset('math/english_log.pickle.bz2')
+	d2 = Dataset('math/english_log_cut2.pickle.bz2')
 	d2.fit_curve()
 	d2.mark_curve(xmax = max(d2.xs)*10)
 	plt.plot(d2.xs, d2.ys, '.', color='#7070ff', label='English')
@@ -127,7 +129,7 @@ def test_extrapolation():
 	print(max(d2.ys))
 	d2.draw_asymptote('--', 'r', False, override=6.98057, label=None)
 	
-	d3 = Dataset('math/german_log.pickle.bz2')
+	d3 = Dataset('math/german_log_cut2.pickle.bz2')
 	d3.fit_curve()
 	d3.mark_curve(xmax = max(d3.xs)*10)
 	plt.plot(d3.xs, d3.ys, '.', color='#70c070', label='German')
@@ -141,20 +143,21 @@ def test_extrapolation():
 	plt.xlabel('Corpus Size (tokens)')
 	plt.ylabel('Information Density (bits/syl)')
 	
-	d3.show()
-
-def figures_for_presentation():
-	plt.rcParams.update({'font.size': 16})
+	plt.gcf().set_size_inches(8, 5)
 	
-	d = Dataset('math/latin_log_new.pickle.bz2')
+	d3.show() # extrapolation_double.pdf
+
+def single_extrapolation():
+	plt.rcParams.update({'font.size': 12})
+	
+	d = Dataset('math/german_log.pickle.bz2')
 	d.fit_curve()
-	d.mark_curve(xmax = max(d.xs)*100)
+	d.mark_curve(xmax = max(d.xs)*10)
 #	d.draw_data('b.')
-	plt.plot(d.xs, d.ys, '.', color='#70c4ff', label='Data') # Blue for Latin
-#	plt.plot(d.xs, d.ys, '.', color='#70c070', label='Data') # Green for German
+	plt.plot(d.xs, d.ys, '.', color='#70c070', label='Data') # Green for German
 	d.draw_curve('-k')
 #	plt.plot(d.pxs, d.pys, '-k', alpha=0)
-	d.draw_asymptote('--', 'b', False)
+	d.draw_asymptote('--', 'g', False)
 #	plt.axhline(y=d.popt[0], linestyle='--', color='r', alpha=0)
 	plt.xlabel('Corpus Size (tokens)')
 	plt.ylabel('Information Density (bits/syl)')
@@ -166,9 +169,31 @@ def figures_for_presentation():
 #	plt.yticks(list(plt.yticks()[0]) + newticks) # Add an extra tick to the y-axis
 	plt.legend()
 	
-	d.show()
+	plt.gcf().set_size_inches(8, 5)
+	
+	d.show() # extrapolation_single.pdf
 
-def csv():
+def main_plot_latin():
+	plt.rcParams.update({'font.size': 12})
+	
+	d = Dataset('math/latin_log_new.pickle.bz2')
+	d.fit_curve()
+	d.mark_curve(xmax = max(d.xs)*10) # *10 for Latin, *100 for German
+	plt.plot(d.xs, d.ys, '.', color='#70c4ff', label='Data') # Blue for Latin
+	d.draw_curve('-k')
+	d.draw_asymptote('--', 'b', False) # Latin
+	plt.xlabel('Corpus Size (tokens)')
+	plt.ylabel('Information Density (bits/syl)')
+	print(d.popt)
+	print(max(d.ys))
+	
+	plt.gca().yaxis.set_major_formatter(StrMethodFormatter('{x:,.2f}')) # 2 decimal places
+	plt.legend()
+	
+	plt.gcf().set_size_inches(8, 5)
+	d.show() # latin.pdf
+
+def zipf_csv():
 	d = CSVDataset('math/zipf.csv')
 	d.fit_curve()
 	d.mark_curve(xmax = max(d.xs)*10**15)
@@ -198,7 +223,7 @@ def compare_bootstrap():
 	d.draw_asymptote()
 	d.show()
 
-def compare_latin():
+def compare_latin_random():
 	d0 = Dataset('math/latin_log.pickle.bz2')
 	d0.fit_curve()
 	d0.mark_curve(xmax=max(d0.xs)*10, npts=500)
@@ -217,7 +242,7 @@ def compare_latin():
 	d0.show()
 
 def compare_latin_authors():
-	plt.rcParams.update({'font.size': 16})
+	plt.rcParams.update({'font.size': 12})
 	vals = []
 	
 	d0 = Dataset('math/latin_log_new.pickle.bz2')
@@ -249,12 +274,16 @@ def compare_latin_authors():
 	print(f'Approximated value: {sum(vals)/len(vals)}')
 	print(f'Approximated standard error: {np.std(vals, ddof=1)}')
 	
-	d0.show()
+	plt.gcf().set_size_inches(8, 5)
+	d0.show() # jackknifing.pdf
 
 def latin_author_histogram():
 	with bz2.open('data/latin/authors.pickle.bz2', 'r') as f:
 		data = pickle.load(f)
 	plt.hist(np.array(list(data.values())), bins=20)
+	plt.xlabel('Tokens contributed to corpus')
+	plt.ylabel('Number of authors')
+	plt.ticklabel_format(style='plain')
 	plt.show()
 
 def latin_sylfreq_histogram():
@@ -264,4 +293,4 @@ def latin_sylfreq_histogram():
 	plt.plot(data[::-1])
 	plt.show()
 
-if __name__ == '__main__': basic()
+if __name__ == '__main__': with_without_digesta()

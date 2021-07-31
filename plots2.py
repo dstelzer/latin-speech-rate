@@ -58,13 +58,15 @@ def violin_manual(data, pos, color, fake=None): # Manual version so we can fine-
 	plt.hlines(mu+sigma, pos-w3, pos+w3, color=color)
 	plt.hlines(mu-sigma, pos-w3, pos+w3, color=color)
 
-def make_plot_2():
-	plt.rcParams.update({'font.size': 20})
+def make_plot_2(romance=False):
+	plt.rcParams.update({'font.size': 12})
 	data = get_data()
-#	langs = ['CAT', 'FRA', 'ITA', 'SPA']
-#	colors = 'ybgr'
-	langs = ['VIE', 'ENG', 'JPN']
-	colors = 'ybr'
+	if romance:
+		langs = ['CAT', 'FRA', 'ITA', 'SPA']
+		colors = 'ybgr'
+	else:
+		langs = ['VIE', 'ENG', 'JPN']
+		colors = 'ybr'
 	d2 = [np.array(data[lang]) for lang in langs]
 	for i, (d, c) in enumerate(zip(d2, colors)):
 		violin_manual(d, i, c)
@@ -73,6 +75,7 @@ def make_plot_2():
 	plt.xticks(range(len(langs)), langs)
 	plt.ylabel('Speech rate (syllables per second)')
 	plt.grid(axis='y', linestyle=':', color='k', alpha=0.5)
-	plt.show()
+	plt.gcf().set_size_inches(8, 4 if romance else 5)
+	plt.show() # violin_global.pdf violin_romance.pdf
 
-if __name__ == '__main__': make_plot_2()
+if __name__ == '__main__': make_plot_2(False)
