@@ -135,16 +135,16 @@ class PHI5Corpus:
 			proc.save(fn)
 		return proc # In case it's wanted for later processing
 
-def main_run_complete():
+def main_run_complete(): # phi5_new without Justinian, phi5_complete_new with
 	input()
 	PHI5Corpus().process_and_save('phi5_new.pickle.bz2', authorial=True, shuffle=False)
 
-def main_run_probability():
+def main_run_probability(): # NO LONGER USED
 	input()
 	for i in trange(10):
 		PHI5Corpus().process_and_save(f'90/{i:02d}.pickle.bz2', chance=0.9)
 
-def main_run_complete_hack(): # Like main_run_complete but using a checkpoint
+def main_run_complete_hack(): # Like main_run_complete but using a checkpoint - NO LONGER USED
 	input()
 	c = PHI5Corpus()
 	pfn = Path('author_checkpoint.pickle.bz2')
@@ -154,7 +154,7 @@ def main_run_complete_hack(): # Like main_run_complete but using a checkpoint
 		proc.total_counts = pickle.load(f)
 	c.process_and_save(f'phi5.pickle.bz2', authorial=True, include=IMPORTANT_AUTHORS, precomputed=proc, overwrite=True, shuffle=True)
 
-def main_run_authors():
+def main_run_authors(): # NO LONGER USED
 	input()
 	c = PHI5Corpus()
 	# First, do the processing without any important authors
@@ -177,7 +177,7 @@ def main_run_authors():
 def main_run_authors_redux():
 	input()
 	c = PHI5Corpus()
-	with bz2.open('phi5_new.pickle.bz2', 'r') as f:
+	with bz2.open('phi5_complete_new.pickle.bz2', 'r') as f:
 		complete = Counter(pickle.load(f))
 	for auth in tqdm(list(Path('auth_solo').glob('*.pickle.bz2'))):
 		with bz2.open(auth, 'r') as f:
@@ -185,7 +185,7 @@ def main_run_authors_redux():
 		new = complete - d
 		if sum(new.values()) != sum(complete.values()) - sum(d.values()):
 			raise ValueError(sum(new.values()), sum(complete.values()), sum(d.values()))
-		path = Path('auth_new') / auth.name
+		path = Path('auth_complete_new') / auth.name
 		with bz2.open(path, 'w') as f:
 			pickle.dump(dict(new), f)
 
@@ -255,4 +255,4 @@ def author_data_misc():
 	print('Misc', c1, c2)
 	input()
 
-if __name__ == '__main__': author_data()
+if __name__ == '__main__': main_run_authors_redux()

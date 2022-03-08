@@ -258,9 +258,9 @@ def size_test():
 def auth_test():
 	input()
 	analyzer = Analysis(log=False)
-	for auth in tqdm(list(Path('data/latin/auth_new/').glob('*.pickle.bz2'))):
+	for auth in tqdm(list(Path('data/latin/auth_complete_new/').glob('*.pickle.bz2'))):
 		analyzer.load_corpus(auth)
-		analyzer.calculate_reduced_e2(logscale=True, npts=200, n=1, save=Path('math/latin_auth_new')/auth.name, bootstrap=False)
+		analyzer.calculate_reduced_e2(logscale=True, npts=200, n=1, save=Path('math/latin_auth_complete_new')/auth.name, bootstrap=False)
 
 def basic():
 	an = Analysis()
@@ -270,7 +270,7 @@ def basic():
 
 def freqs():
 	an = Analysis()
-	an.load_corpus('data/latin/phi5_complete.pickle.bz2')
+	an.load_corpus('data/latin/phi5_complete_new.pickle.bz2')
 	an.count_unigrams()
 	an.dump_frequencies('math/latin_sylfreq.pickle.bz2')
 	print(max(an.unigrams.items(), key=lambda a:a[1]))
@@ -294,4 +294,4 @@ def misc_stats():
 		f.write('\n'.join(tops[:1000]))
 	print('Written')
 
-if __name__ == '__main__': basic()
+if __name__ == '__main__': auth_test()

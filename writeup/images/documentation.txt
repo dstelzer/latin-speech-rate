@@ -1,0 +1,27 @@
+For all images, prefer PDF over PNG. The PNGs are preserved only for historical purposes. They're outdated and use the wrong data set.
+
+demo1, demo2, demo3: demonstrating the extrapolation methods using German data from Oh 2015
+
+digesta: extrapolation with and without Justinian
+
+extrapolation_double: comparing extrapolation results for English and German
+
+extrapolation_single: slight modification of demo3, using German data
+
+jackknifing: the results of jackknifing on Latin, with Cicero, without Justinian
+
+jackknifing_yesdigesta: with Cicero, with Digesta
+
+jackknifing_nocicero: without Cicero, without Digesta
+
+latin: the main results with the new Latin data
+
+latin_vowels: a diagram of the Classical Latin vowel system which should really be redone in vectors
+
+romance_vowels: a diagram of the Classical Latin vowel system which should really be redone in vectors
+
+violin_global: comparing Latin against English, Vietnamese, Japanese
+
+violin_romance: comparing Latin against French, Spanish, Catalan, Italian
+
+vowelchange: latin_vowels and romance_vowels side by side for comparison

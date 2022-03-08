@@ -172,6 +172,7 @@ def single_extrapolation():
 	plt.gcf().set_size_inches(8, 5)
 	
 	d.show() # extrapolation_single.pdf
+	# modify for demo1 demo2 demo3
 
 def main_plot_latin():
 	plt.rcParams.update({'font.size': 12})
@@ -245,17 +246,17 @@ def compare_latin_authors():
 	plt.rcParams.update({'font.size': 12})
 	vals = []
 	
-	d0 = Dataset('math/latin_log_new.pickle.bz2')
+	d0 = Dataset('math/latin_log_complete_new.pickle.bz2')
 	d0.fit_curve()
 	
-	for i, auth in enumerate(Path('math/latin_auth_new').glob('*.pickle.bz2')): # Use auth_all to include the Digesta
-	#	if '0474' in auth.stem: continue # Remove Cicero if you want
+	for i, auth in enumerate(Path('math/latin_auth_complete_new').glob('*.pickle.bz2')): # Use auth_all to include the Digesta
+#		if '0474' in auth.stem: continue # Remove Cicero if you want
 		d = Dataset(auth)
 		d.fit_curve()
 		d.mark_curve(xmax=max(d0.xs)*10, npts=500)
 		# old: random.choice('oDv^s')
 #		d.draw_data('.'+random.choice('bgmyc'))
-		d.draw_data('.'+'bgmycbgmycbgcm'[i])
+		d.draw_data('.'+'bgmycbgmycbgcmyb'[i])
 		d.draw_curve('k')
 #		d.draw_asymptote('--', 'k', include_tick=False)
 		vals.append(d.popt[0])
@@ -275,7 +276,7 @@ def compare_latin_authors():
 	print(f'Approximated standard error: {np.std(vals, ddof=1)}')
 	
 	plt.gcf().set_size_inches(8, 5)
-	d0.show() # jackknifing.pdf
+	d0.show() # jackknifing.pdf jackknifing_yesdigesta jackknifing_nocicero
 
 def latin_author_histogram():
 	with bz2.open('data/latin/authors.pickle.bz2', 'r') as f:
@@ -293,4 +294,4 @@ def latin_sylfreq_histogram():
 	plt.plot(data[::-1])
 	plt.show()
 
-if __name__ == '__main__': with_without_digesta()
+if __name__ == '__main__': compare_latin_authors()
