@@ -4,7 +4,9 @@
 \usepackage[utf8]{inputenc} %Standard diacritics in Romance languages (accents, umlauts)
 \usepackage{newtxtext} %Uses Times New Roman font
 \usepackage[nointegrals]{wasysym}
+\usepackage{ragged2e}
 \usepackage{diagbox}
+\usepackage[labelfont=bf,labelsep=period,font=small,justification=RaggedRight,format=plain,margin=0pt,singlelinecheck=false]{caption}
 \usepackage{graphicx}
 \graphicspath{ {./images/} }
 \usepackage[style=authoryear-icomp,natbib=true,sortcites=true,maxbibnames=99]{biblatex}% natbib=true so we can use natbib commands with biblatex
@@ -14,18 +16,24 @@
 
 \usepackage{xpatch}
 
-\usepackage[tiny,bf]{titlesec}
-\titleformat{\subsection}{}{\thesubsection}{1em}{\itshape}
-\titleformat{\subsubsection}{}{\thesubsubsection}{1em}{\itshape}
+%\usepackage[tiny,bf]{titlesec}
+%\titleformat{\subsection}{}{\thesubsection}{1em}{\itshape}
+%\titleformat{\subsubsection}{}{\thesubsubsection}{1em}{\itshape}
+\usepackage[tiny]{titlesec}
+\newcommand{\periodafter}[1]{#1.}
+\titleformat{\subsection}{\itshape}{\thesubsection\periodafter}{0.3em}{\itshape}
+\titleformat{\subsubsection}{\itshape}{\thesubsubsection\periodafter}{0.3em}{\itshape}
 \titlelabel{\thetitle.\quad}
+\setlength\parindent{1.25cm}
+\titlespacing*{\subsection}{0pt}{1em}{0pt}
+\titlespacing*{\subsubsection}{0pt}{1em}{0pt}
 
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 \fancyhead{}
 \fancyhead[LE]{\thepage \hspace{3mm} \small Isogloss YEAR, ISSUE/NR}
-%\fancyhead[RE]{\small Daniel Stelzer}
-\fancyhead[RE]{\small{} [Name]}
-\fancyhead[LO]{\small How fast did Cicero speak?}
+\fancyhead[RE]{\small Daniel Stelzer}
+\fancyhead[LO]{\small Title of paper [leave `Title of paper' unchanged]}
 \fancyhead[RO]{\small Isogloss YEAR, 1/2 \normalsize \thepage}
 \fancyfoot{}
 %\setcounter{page}{23} %This sets the initial page at a number other than 1 (in this case 23).
@@ -46,6 +54,12 @@
 \setunit{\addperiod\space}%
 \printtext%
 }{}{}
+
+% Change page number formatting to "Details: Pages" instead of "Details, pp. Pages" in both cites and bibliography
+\renewcommand{\bibpagespunct}{\addcolon\space}
+\renewcommand{\postnotedelim}{\addcolon\space}
+\DeclareFieldFormat{pages}{#1}
+\DeclareFieldFormat{postnote}{#1}
 
 \usepackage{tipa} %for IPA
 \usepackage{phonrule} %for phonological rules
@@ -94,10 +108,8 @@
 \makeatother
 
 \title{{\Huge{}How fast did Cicero speak?}\\{\Large{}The speech rate of Classical Latin versus its Romance descendants}}
-%\author{Daniel Stelzer}
-\author{[Anonymized]}
-%\affil{University of Illinois at Urbana-Champaign\\stelzer3@illinois.edu}
-\affil{[Anonymized]}
+\author{Daniel Stelzer}
+\affil{University of Illinois at Urbana-Champaign\\stelzer3@illinois.edu}
 \setlength{\affilsep}{1pt}
 \date{}
 
@@ -116,17 +128,17 @@
 \thispagestyle{first}
 
 \vspace{0.5cm}
-\noindent \includegraphics[ height=1cm]{ccby.png}
+\noindent \includegraphics[height=1cm]{ccby.png}
 
-\hfill Received: 20-01-2034 
+\hfill Received: XX-XX-XX
 
-\hfill Accepted: 21-01-2034
+\hfill Accepted: XX-XX-XX
 
-\hfill Published: 22-01-2034
+\hfill Published: XX-XX-XX
 
 \vspace{1cm}
 
-\noindent \textbf{How to cite} Leave blank
+\noindent \textbf{How to cite} [Leave blank]
 
 \vspace{1.5cm}
 
@@ -139,7 +151,7 @@
 
 \vspace{5mm}
 
-\noindent \textbf{Keywords:} Information density; speech rate; Latin; information theory; resampling
+\noindent \textbf{Keywords:} Information density; speech rate; Latin; information theory; resampling.
 
 \vspace{4mm}
 \begin{center}
@@ -165,7 +177,7 @@
 
 The idea that all languages are equally expressive---that, despite all the variation in phonology, syntax, and other aspects, every language is equally suited to communication and equally complex or sophisticated in its grammar---is ubiquitous in modern linguistics. \citet{joseph} attribute the earliest expression of this concept to Humboldt in the 1820s, who claimed that ``all [languages] contain all that is rigorously needed not only for the correctness, but the perfection of expression''\footnote{Quoted in \cite[8]{rémusat}; translation from \cite[344]{joseph}.}. By the end of the 19th century, this idea had gained support from the study of language evolution: \citet[227]{passy} suggested that language change is an eternal struggle between the tendencies ``to get rid of what is superfluous'' and ``to highlight what is necessary''\footnote{Translation from \cite[352]{joseph}.}, preventing any overall increase or decrease of complexity.
 
-Despite significant pushback, especially from those who bristled at the idea of equating European languages with those of Africa and the Americas, this idea slowly gained traction among the linguistic community; by 1955 it had made its way into the \emph{Encyclopædia Britannica} article on ``Language'', now with a specific mention of ``complexity'': ``All languages of today are equally complex and equally adequate to express all the facets of the speakers' culture, and all can be expanded and modified as needed.'' \citep[698]{trager}. While the idea of ``primitive'' versus ``sophisticated'' languages persists in pop culture, this hypothesis of equal complexity is now put forth as a basic axiom in introductory textbooks: \citet[8]{akmajian}, for example, state plainly that ``all known languages are at a similar level of complexity'', and \citet[8]{ogrady} assert that ``linguists don't even try to rate languages as [\,\ldots] simple or complex''\footnote{Outside of introductory textbooks, some linguists are more skeptical. \citet[2]{shosted} refers to it as ``a claim that has been, until fairly recently, more a matter of dogma than of science'', and \citet[216]{maddieson} suggests that ``[s]uch a view seems to be based on the humanistic principle that all languages are to be held in equal esteem and are equally capable of serving the communicative demands placed on them. In rejecting the notion of `primitive' languages linguists seem to infer that a principle of equal complexity must apply.'' On the flipside, other linguists support the claim for purely theoretical reasons: \citet[165-166]{chomsky} suggests that all languages ``ought to'' have the same overall budget for markedness, no matter how they spend it. \citet[540]{pellegrino} suggest simply that ``the assumption of an `equal overall complexity' is ill-defined''. For more discussion, see \cite{joseph}.}.
+Despite significant pushback, especially from those who bristled at the idea of equating European languages with those of Africa and the Americas, this idea slowly gained traction among the linguistic community; by 1955 it had made its way into the \emph{Encyclopædia Britannica} article on ``Language'', now with a specific mention of ``complexity'': ``All languages of today are equally complex and equally adequate to express all the facets of the speakers' culture, and all can be expanded and modified as needed'' \citep[698]{trager}. While the idea of ``primitive'' versus ``sophisticated'' languages persists in pop culture, this hypothesis of equal complexity is now put forth as a basic axiom in introductory textbooks: \citet[8]{akmajian}, for example, state plainly that ``all known languages are at a similar level of complexity'', and \citet[8]{ogrady} assert that ``linguists don't even try to rate languages as [\,\ldots] simple or complex''\footnote{Outside of introductory textbooks, some linguists are more skeptical. \citet[2]{shosted} refers to it as ``a claim that has been, until fairly recently, more a matter of dogma than of science'', and \citet[216]{maddieson} suggests that ``[s]uch a view seems to be based on the humanistic principle that all languages are to be held in equal esteem and are equally capable of serving the communicative demands placed on them. In rejecting the notion of `primitive' languages linguists seem to infer that a principle of equal complexity must apply.'' On the flipside, other linguists support the claim for purely theoretical reasons: \citet[165-166]{chomsky} suggests that all languages ``ought to'' have the same overall budget for markedness, no matter how they spend it. \citet[540]{pellegrino} suggest simply that ``the assumption of an `equal overall complexity' is ill-defined''. For more discussion, see \cite{joseph}.}.
 
 % Maddieson 216: "Such a view seems to be based on the humanistic principle that all languages are to be held in equal esteem and are equally capable of serving the communicative demands placed on them. In rejecting the notion of `primitive' languages linguists seem to infer that a principle of equal complexity must apply."
 
@@ -193,7 +205,7 @@ Using this measure, they found a striking negative correlation between the densi
 
 These results by \citet{oh} and \citet{pellegrino} were brought together by \citet{coupé}, who first showed that one of \citeauthor{oh}'s corpus-based information density metrics was a good (and easier-to-calculate) proxy for \citeauthor{pellegrino}'s meaning density\footnote{However, the sample size in \citeauthor{pellegrino}'s study was fairly small. The relationship between ``information'' and ``meaning'' certainly merits further study, especially now that parallel corpora have become more available.}, then applied it to a wide variety of languages using larger written corpora. They found that the amount of information conveyed per second (``information rate'') was extremely consistent across the languages surveyed: while not perfectly constant (speech rate varies significantly by speaker and circumstance, for example), this average information rate varies much less by language than speech rate or information density, and seems to generally stay within a particular narrow band. They suggest that this ``optimal range'' is a result of ``universal communicative pressures characterizing the human-specific communication niche'' \citep[6]{coupé}. In other words, information rate is a property of how humans use language to communicate, on a larger scale than any individual language: ``social and neurocognitive pressures [\,\ldots] define an optimal range for [information rate], around which the complex adaptive system (consisting of each language and its speakers) hovers'' \citep[6]{coupé}.
 
-The present study is a new application of \citeauthor{coupé}'s results. Speech rate is normally calculated through recordings of native speakers, which is impossible for a dead language like Classical Latin\footnote{\citeauthor{oh} also investigated the speech rate of bilinguals in \cite{ohbilingual}. The results were not conclusive but suggest that the speech rate of L2 speakers can vary significantly from L1 speakers, meaning classicists who become fluent later in life cannot reliably tell us the speech rate of native speakers in ancient Rome.}. But \citeauthor{oh}'s methods of calculating information density are based on \emph{written} corpora, which do exist for a number of extinct languages. If we assume the optimal information rate is constant across time and culture, can we calculate the information density from a corpus, and thereby ``reverse engineer'' the speech rate?
+The present study is a new application of \citeauthor{coupé}'s results. Speech rate is normally calculated through recordings of native speakers, which is impossible for a dead language like Classical Latin\footnote{\citeauthor{oh} also investigated the speech rate of bilinguals in \cite{ohbilingual}. The results were not conclusive but suggest that the speech rate of L2 speakers can vary significantly from L1 speakers, meaning classicists who become fluent later in life cannot reliably tell us the speech rate of native speakers in ancient Rome.}. However, \citeauthor{oh}'s methods of calculating information density are based on \emph{written} corpora, which do exist for a number of extinct languages. If we assume the optimal information rate is constant across time and culture, can we calculate the information density from a corpus, and thereby ``reverse engineer'' the speech rate?
 
 % Coupé 6: "social and neurocognitive pressures [\ldots] define an optimal range for IR, around which the complex adaptive system (consisting of each language and its speakers) hovers."
 
@@ -268,7 +280,7 @@ First, we include any phonetic detail that could impact syllabification. Classic
 
 The other exception is complete neutralization. This is often reflected in Classical orthography already: for example, the distinction between \ipa{k} and \ipa{k\super{w}} is neutralized before \ipa{u} and \ipa{u:}, giving \emph{se\textbf{qu}-or} `I follow' but \emph{se\textbf{c}-undus} `following'. Sometimes, though, morphological spellings hide this neutralization: \emph{equus} `horse' is written with \emph{qu} under the influence of forms like \emph{equ\=\i} `of the horse', even though grammarians like Velius Longus \citep[59.2-8]{longus} indicate a pronunciation \ipab{ekus}. Similarly, \emph{urbs} `city' is written with \emph{b} under the influence of forms like \emph{urbis} `of the city', but was almost certainly pronounced with a voiceless stop \ipab{urps}, as suggested by Quintilian \citep[I.7.7]{quintilian}. We transcribe these words as \ipa{ekus} and \ipa{urps}.
 
-Syllabification, finally, is a much more thoroughly-studied topic. Classical metered poetry treats closed and open syllables differently, so formulating rules of syllabification has long been of interest to poets and poetry scholars, and syllable codas also impacted certain sound changes in Romance. For this we used an algorithm from CLTK \citep{cltk}, specially modified to remove certain hyperforeignisms specified by ancient authors\footnote{For example, \emph{pt} does not seem to ever have been a valid onset in Latin; poetic syllabifications like \emph{ru-ptus} are in imitation of Greek.}.
+Syllabification, finally, is a much more thoroughly-studied topic. Classical metered poetry treats closed and open syllables differently, so formulating rules of syllabification has long been of interest to poets and poetry scholars, and syllable codas also impacted certain sound changes in Romance. For this we used an algorithm from CLTK \citep{cltk}, specially modified to remove certain hyperforeignisms specified by ancient authors\footnote{For example, \emph{pt} does not seem to ever have been a valid onset in Latin; poetic syllabifications like \emph{ru-ptus} `broken' are in imitation of Greek.}.
 
 The syllabified, near-phonemic transcription can then be converted into unigram and bigram frequency lists, which form the input to equation~\ref{eq:id}.
 
@@ -393,7 +405,7 @@ Notably, the uncertainty in our information density value (\(\sigma_{ID}\)) is s
 
 Compared to \posscite{coupé} empirical data, these results---6.29 syllables per second with a standard deviation of 0.82---seem quite reasonable. The rate is fairly similar to that of English, with some other languages being much faster and others much slower. The uncertainty is significantly smaller than many of the differences between languages, showing that our results are precise enough to be meaningful. And the uncertainty is also fairly similar to the variations reported in \citeauthor{coupé}'s experiment.
 
-Figure~\ref{fig:violin1} compares our reconstructed speech rate for Classical Latin against the data gathered by \citet{coupé} for Vietnamese, English, and Japanese. Tickmarks indicate the mean and one standard deviation above and below; for living languages, the ``violin'' shows the distribution of measurements of actual speech rate, while for Latin, it's approximated by a normal distribution with our calculated mean and standard deviation.
+Figure~\ref{fig:violin1} compares our reconstructed speech rate for Classical Latin against the data gathered by \citet{coupé} for Vietnamese, English, and Japanese. Tickmarks indicate the mean and one standard deviation above and below; for living languages, the ``violin'' of the plot shows the distribution of measurements of actual speech rate, while for Latin, it's approximated by a normal distribution with our calculated mean and standard deviation.
 
 \begin{figure}[p]
 \centering
@@ -517,17 +529,19 @@ Finally, the Latin corpus may offer an opportunity to expand on \citet{oh} and \
 
 The recent advances in the study of linguistic information are exciting, and we believe they have significant potential. Reconstructing phonetic properties of long-dead languages may be only the beginning.
 
+\section*{Supplemental Materials}
+
+The source code used for this analysis can be found at \url{https://github.com/dstelzer/latin-speech-rate}.
+
 \section*{Acknowledgements}
 
-[Acknowledgements removed for blind review]
+I would like to thank Ryan Shosted for advice and guidance on every part of this project, Yoon Mi Oh for pointers on the entropy calculations, and Tim Stelzer and Ada Stelzer for mathematical assistance.
 
-% I would like to thank Ryan Shosted for advice and guidance on every part of this project, Yoon Mi Oh for pointers on the entropy calculations, and Tim Stelzer and Ada Stelzer for mathematical assistance.
-
-% I would also like to thank the organizers and reviewers of the LSRL 51 conference where this work was first presented; Keith Tse, Benjamin Tucker, William Balla-Johnson, José Ignacio Hualde, and Ed Rubin for their questions and comments at that conference; and three anonymous reviewers for their feedback and insights.
+I would also like to thank the organizers and reviewers of the LSRL 51 conference where this work was first presented; Keith Tse, Benjamin Tucker, William Balla-Johnson, José Ignacio Hualde, and Ed Rubin for their questions and comments at that conference; and three anonymous reviewers for their feedback and insights.
 
 %\nocite{*}
 \label{sec:refs}
-%\setlength\bibitemsep{0.5\baselineskip} % TODO is this okay?
+\setlength\bibitemsep{0.5\baselineskip}
 \printbibliography
 
 \end{document}
