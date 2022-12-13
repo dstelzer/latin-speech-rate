@@ -89,6 +89,8 @@
 \newcommand{\yields}{\textrightarrow}
 \DeclareGraphicsExtensions{.pdf,.png}
 
+\usepackage{xurl} % CHANGED: allow breaking URLs
+
 \usepackage{hyperref}
 \newcommand*{\tocref}[1]{\hyperref[{#1}]{\ref*{#1}.~\nameref*{#1}}}
 % https://tex.stackexchange.com/q/121865/169121
@@ -99,8 +101,10 @@
 	urlcolor={blue!80!black}
 }
 
+\clubpenalties 1 10000 % attempt to inhibit bad page breaks
+
 % Hacking footnotes per editor feedback
-% Need indent of 1.25
+% Need indent of 1.25cm
 \makeatletter
 % \renewcommand\@makefntext[1]{\setlength\parindent{1.25cm}\mbox{\@thefnmark.~}{#1}}
 % \@makefnmark#1 ?
@@ -474,11 +478,14 @@ The `Complexity' and `Index' values, while fairly similar here, can also obscure
 
 \subsection{Historical Phonology}
 
+\clubpenalties 1 10 % Now that we're done with the problematic figures (the graphs), we can allow breaking paragraphs across pages again to make it look nicer
+
 Leaving aside \posscite{lapsyd} index, I suggest a broader look at the history of the Romance languages, and what sorts of common phonological changes these languages shared.
 
 \begin{figure}[h]
 \centering
 \caption{The vowel inventories of Classical Latin (left) and early Romance (right)}
+\vspace{2ex}
 \label{fig:vowels}
 \noindent\includegraphics[width=\linewidth]{vowelchange}
 \end{figure}
@@ -525,7 +532,7 @@ The result is a similar number of consonants in Classical Latin and its descenda
 
 This created more consonant clusters---but, crucially, did not significantly increase the inventory of syllables, or allow syllables to appear in more contexts. All of these clusters and syllables existed in the language before the syncope process took place.
 
-\textbf{French vowel changes}: French is one of the less conservative Romance languages, phonologically, and in particular it has a significantly larger vowel inventory than Italian, Spanish, or Catalan. These vowels stem from a variety of dramatic changes from early Gallo-Romance, often conditioned by surrounding consonants which later disappeared \parencite{pope}{boyd}:
+\textbf{French vowel changes}: French is one of the less conservative Romance languages, phonologically, and in particular it has a significantly larger vowel inventory than Italian, Spanish, or Catalan. These vowels stem from a variety of dramatic changes from early Gallo-Romance, often conditioned by surrounding consonants which later disappeared \parencites{pope}{boyd}:
 
 \begin{exe}
 \ex \emph{for\textbf{es}tem} `forest' \yields{} \emph{for\textbf{\^e}t} \ipa{fOKE}
