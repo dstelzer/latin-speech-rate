@@ -32,7 +32,7 @@
 \pagestyle{fancy}
 \fancyhead{}
 \fancyhead[LE]{\thepage \hspace{3mm} \small Isogloss YEAR, ISSUE/NR}
-\fancyhead[RE]{\small Daniel Stelzer}
+\fancyhead[RE]{\small Author}
 \fancyhead[LO]{\small Title of paper [leave `Title of paper' unchanged]}
 \fancyhead[RO]{\small Isogloss YEAR, 1/2 \normalsize \thepage}
 \fancyfoot{}
@@ -92,6 +92,17 @@
 	citecolor={blue!50!black},
 	urlcolor={blue!80!black}
 }
+
+% Hacking footnotes per editor feedback
+% Need indent of 1.25
+\makeatletter
+% \renewcommand\@makefntext[1]{\setlength\parindent{1.25cm}\mbox{\@thefnmark.~}{#1}}
+% \@makefnmark#1 ?
+\renewcommand\@makefntext[1]{%
+    \setlength\parindent{1em}%
+    \noindent
+    \hb@xt@1.25cm{\hss\@makefnmark}#1} % Changed 1.8em to 1.25cm
+\makeatother
 
 \makeatletter
 % patch \maketitle so that it doesn't center
@@ -175,15 +186,15 @@
 \section{Background}
 \label{sec:bg}
 
-The idea that all languages are equally expressive---that, despite all the variation in phonology, syntax, and other aspects, every language is equally suited to communication and equally complex or sophisticated in its grammar---is ubiquitous in modern linguistics. \citet{joseph} attribute the earliest expression of this concept to Humboldt in the 1820s, who claimed that ``all [languages] contain all that is rigorously needed not only for the correctness, but the perfection of expression''\footnote{Quoted in \cite[8]{rémusat}; translation from \cite[344]{joseph}.}. By the end of the 19th century, this idea had gained support from the study of language evolution: \citet[227]{passy} suggested that language change is an eternal struggle between the tendencies ``to get rid of what is superfluous'' and ``to highlight what is necessary''\footnote{Translation from \cite[352]{joseph}.}, preventing any overall increase or decrease of complexity.
+The idea that all languages are equally expressive---that, despite all the variation in phonology, syntax, and other aspects, every language is equally suited to communication and equally complex or sophisticated in its grammar---is ubiquitous in modern linguistics. \citet{joseph} attribute the earliest expression of this concept to Humboldt in the 1820s, who claimed that ``all [languages] contain all that is rigorously needed not only for the correctness, but the perfection of expression''\footnote{Quoted in \cite[8]{rémusat}; translation from \cite[344]{joseph}.}. By the end of the 19th century, this idea had gained support from the study of language evolution. \citet[227]{passy} suggested that language change is an eternal struggle between the tendencies ``to get rid of what is superfluous'' and ``to highlight what is necessary''\footnote{Translation from \cite[352]{joseph}.}, preventing any overall increase or decrease of complexity.
 
-Despite significant pushback, especially from those who bristled at the idea of equating European languages with those of Africa and the Americas, this idea slowly gained traction among the linguistic community; by 1955 it had made its way into the \emph{Encyclopædia Britannica} article on ``Language'', now with a specific mention of ``complexity'': ``All languages of today are equally complex and equally adequate to express all the facets of the speakers' culture, and all can be expanded and modified as needed'' \citep[698]{trager}. While the idea of ``primitive'' versus ``sophisticated'' languages persists in pop culture, this hypothesis of equal complexity is now put forth as a basic axiom in introductory textbooks: \citet[8]{akmajian}, for example, state plainly that ``all known languages are at a similar level of complexity'', and \citet[8]{ogrady} assert that ``linguists don't even try to rate languages as [\,\ldots] simple or complex''\footnote{Outside of introductory textbooks, some linguists are more skeptical. \citet[2]{shosted} refers to it as ``a claim that has been, until fairly recently, more a matter of dogma than of science'', and \citet[216]{maddieson} suggests that ``[s]uch a view seems to be based on the humanistic principle that all languages are to be held in equal esteem and are equally capable of serving the communicative demands placed on them. In rejecting the notion of `primitive' languages linguists seem to infer that a principle of equal complexity must apply.'' On the flipside, other linguists support the claim for purely theoretical reasons: \citet[165-166]{chomsky} suggests that all languages ``ought to'' have the same overall budget for markedness, no matter how they spend it. \citet[540]{pellegrino} suggest simply that ``the assumption of an `equal overall complexity' is ill-defined''. For more discussion, see \cite{joseph}.}.
+Despite significant pushback, especially from those who bristled at the idea of equating European languages with those of Africa and the Americas, this idea slowly gained traction among the linguistic community. By 1955 it had made its way into the \emph{Encyclopædia Britannica} article on ``Language'', now with a specific mention of `complexity': ``All languages of today are equally complex and equally adequate to express all the facets of the speakers' culture, and all can be expanded and modified as needed'' \citep[698]{trager}. While the idea of `primitive' versus `sophisticated' languages persists in pop culture, this hypothesis of equal complexity is now put forth as a basic axiom in introductory textbooks. \citet[8]{akmajian}, for example, state plainly that ``all known languages are at a similar level of complexity,'' and \citet[8]{ogrady} assert that ``linguists don't even try to rate languages as [\,\ldots] simple or complex.''\footnote{Outside of introductory textbooks, some linguists are more skeptical. \citet[2]{shosted} refers to it as ``a claim that has been, until fairly recently, more a matter of dogma than of science'', and \citet[216]{maddieson} suggests that ``[s]uch a view seems to be based on the humanistic principle that all languages are to be held in equal esteem and are equally capable of serving the communicative demands placed on them. In rejecting the notion of `primitive' languages linguists seem to infer that a principle of equal complexity must apply.'' On the flipside, other linguists support the claim for purely theoretical reasons: \citet[165-166]{chomsky} suggests that all languages ``ought to'' have the same overall budget for markedness, no matter how they spend it. \citet[540]{pellegrino} suggest simply that ``the assumption of an `equal overall complexity' is ill-defined''. For more discussion, see \cite{joseph}.}
 
 % Maddieson 216: "Such a view seems to be based on the humanistic principle that all languages are to be held in equal esteem and are equally capable of serving the communicative demands placed on them. In rejecting the notion of `primitive' languages linguists seem to infer that a principle of equal complexity must apply."
 
-However, what exactly this universal ``expressiveness'' (or ``complexity'' or ``sophistication'') \emph{means} is far from obvious. Many typological studies, such as \citet{maddieson} and \citet{shosted}, have tried to quantify the complexity of different aspects of grammar, looking for correlations between them (e.g.\ complicated phonology correlating with simpler morphology)---but results have generally been inconclusive.
+However, what exactly this universal `expressiveness' (or `complexity' or `sophistication') \emph{means} is far from obvious. Many typological studies, such as \citet{maddieson} and \citet{shosted}, have tried to quantify the complexity of different aspects of grammar, looking for correlations between them (e.g., complicated phonology correlating with simpler morphology)---but results have generally been inconclusive.
 
-In the 1950s, this trend of research was given a new suite of tools from the burgeoning discipline of information theory. \citet{shannon} introduced new mathematical models of information transmission based on concepts like entropy, noise, and channel capacity, and mathematically-inclined linguists soon started applying these models to spoken language. \citet[674,676]{karlgren}, for example, suggested that ``seemingly careless pronunciation'' was actually ``an efficient coding to fit the channel'' of vocal transmission, and in particular that ``there is an equilibrium between [Shannon's] information value on the one hand and duration and similar qualities of the realization on the other''.
+In the 1950s, this trend of research was given a new suite of tools from the burgeoning discipline of information theory. \citet{shannon} introduced new mathematical models of information transmission based on concepts like entropy, noise, and channel capacity, and mathematically-inclined linguists soon started applying these models to spoken language. \citet[674,676]{karlgren}, for example, suggested that ``seemingly careless pronunciation'' was actually ``an efficient coding to fit the channel'' of vocal transmission, and in particular that ``there is an equilibrium between [Shannon's] information value on the one hand and duration and similar qualities of the realization on the other.''
 
 % \textbf{THE FOLLOWING PARAGRAPHS ARE NEW}
 
