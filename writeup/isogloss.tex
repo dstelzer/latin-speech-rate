@@ -114,6 +114,11 @@
     \hb@xt@1.25cm{\hss\@makefnmark}#1} % Changed 1.8em to 1.25cm
 \makeatother
 
+% Changed: add raggedbottom
+\raggedbottom
+% Force gb4e examples leftward
+\exewidth{(2)}
+
 \makeatletter
 % patch \maketitle so that it doesn't center
 \patchcmd{\@maketitle}{center}{flushleft}{}{}
@@ -142,7 +147,6 @@
 %\date{}
 
 \begin{document}
-
 
 \maketitle
 
@@ -277,6 +281,8 @@ Fortunately, Classical Latin orthography is very close to phonemic. The Latin al
 % com 3
 % cum 55,738
 
+\setcounter{exx}{3} % Make the numbers be the same between examples and equations: we had three equations above, so now the first example should be 4
+
 \begin{exe}
 \ex \textsc{alivm} \ipa{a.li.um} `another'
 \ex \textsc{alivm} \ipa{a:.li.um} `garlic'
@@ -327,6 +333,8 @@ One classic solution to the problem of limited data is bootstrapping, a way of a
 \end{figure}
 
 Notably, however, the issues with bootstrapping arise from sampling with replacement. By sampling \emph{without} replacement, we can ensure the distribution is preserved. The result is always smaller than the original corpus, but by functionally discarding tokens at random, we can quite reliably create a smaller corpus that maintains the proper distribution. \citet[57]{oh} uses this technique to demonstrate that estimated information density increases sharply with corpus size, then appears to converge (see figure~\ref{fig:exsingle}). I replicated her results for English and German, randomly discarding from the corpora to create smaller sub-corpora and calculating the information density from them. I then attempted to fit a curve to the convergence. In particular, the hyperbola shown in equation~\ref{eq:hyperbola} fit extremely well\footnote{This curve was found empirically to have the best least-squares fit out of several tested, including other hyperbolic curves as well as exponential \(a(1-\exp(-b(x-c)))\) and logarithmic \(a\ln(b(x-c))\).}; it relates the estimated entropy (\(y\)) to the corpus size (\(x\)) with four parameters tuned through least-squares fitting. The results are shown in figure~\ref{fig:exsingle}.
+
+\setcounter{equation}{7} % This is horribly hacky but it's the last stages of copy-editing and I don't really want to go edit gb4e to make it use the equation counter
 
 \begin{equation}
 \label{eq:hyperbola}
@@ -493,6 +501,8 @@ Leaving aside \posscite{lapsyd} index, I suggest a broader look at the history o
 \textbf{Vowel changes}: Classical Latin had twelve phonemic monophthongs, \ipa{i y e a o u} with a binary length distinction, and at least\footnote{Some analyses, such as \citet{allen}, consider other diphthongs phonemic as well, but others, such as \citet{alkire} and \citet{boyd}, include only these three. In this paper, I follow \citeauthor{allen} for most matters of Classical phonology and phonetics (including table~\ref{tab:phono}), but \citet{alkire} specifically in discussions of historical development (including figure~\ref{fig:vowels}).} three phonemic diphthongs, \ipa{a\textsubarch{e} o\textsubarch{e} a\textsubarch{u}}. Early in Proto-Romance, the length distinction became a quality distinction, and a series of mergers resulted in seven phonemic monophthongs \ipa{i e E a O o u} and one diphthong \ipa{a\textsubarch{u}}, as shown in figure~\ref{fig:vowels}. \citet{alkire} refer to this as the `Great Merger', and its effects can be seen in almost all Romance languages\footnote{The famous exception is Sardinian.}; most underwent further mergers, especially when unstressed \citep{boyd,alkire}. The main result of this was to cut the number of possible syllables nearly in half.
 
 \textbf{Cluster breaking}: While Classical Latin allowed \ipa{s} before stops in onsets, Western Romance varieties historically did not.
+
+\setcounter{exx}{10} % And one final awful hack
 
 \begin{exe}
 \ex \emph{strictus} `tight' \yields{} Spanish \emph{estrecho}
