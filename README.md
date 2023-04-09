@@ -1,8 +1,6 @@
 # Latin Speech Rate
 
-This is the source code used in "How fast did Cicero speak? The speech rate of Classical Latin versus its Romance descendants" by Daniel M. Stelzer.
-
-ADD LINK HERE WHEN PUBLISHED
+This is the source code used in ["How fast did Cicero speak? The speech rate of Classical Latin versus its Romance descendants" by Daniel M. Stelzer](https://revistes.uab.cat/isogloss/article/view/v8-n4-stelzer).
 
 Usage notes:
  - This relies on a specially-modified version of CLTK, provided at [dstelzer/cltk](https://github.com/dstelzer/cltk).
