@@ -10,7 +10,11 @@ from pathlib import Path
 
 import numpy as np
 
-from tqdm import tqdm, trange
+import sys
+if 'ipykernel' in sys.modules:
+	from tqdm.notebook import tqdm, trange
+else:
+	from tqdm import tqdm, trange
 
 class Analysis: # Simplest version of the analysis, takes a Counter mapping words to counts
 	

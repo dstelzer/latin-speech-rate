@@ -10,9 +10,16 @@ from cltk.corpus.utils.formatter import assemble_phi5_author_filepaths, assemble
 from cltk.corpus.utils.formatter import phi5_plaintext_cleanup
 from cltk.corpus.latin.phi5_index import PHI5_INDEX
 
-from tqdm import tqdm, trange
+import sys
+if 'ipykernel' in sys.modules:
+	from tqdm.notebook import tqdm, trange
+else:
+	from tqdm import tqdm, trange
 
-from process import Processor
+try:
+	from process import Processor
+except ImportError:
+	from .process import Processor
 
 # Authors with large numbers of words
 IMPORTANT_AUTHORS = {
@@ -37,8 +44,9 @@ IMPORTANT_AUTHORS = {
 
 GLOBAL_EXCLUSIONS = {
 	'LAT9999', # A bibliography file that should not be included
-	'LAT2806', # Justinian's Digesta, which is an outlier that pulls the whole value down
+#	'LAT2806', # Justinian's Digesta, which is an outlier that pulls the whole value down
 }
+JUSTINIAN = ('LAT2806',)
 
 class PHI5Corpus:
 	
@@ -137,7 +145,8 @@ class PHI5Corpus:
 
 def main_run_complete(): # phi5_new without Justinian, phi5_complete_new with
 	input()
-	PHI5Corpus().process_and_save('phi5_new.pickle.bz2', authorial=True, shuffle=False)
+#	PHI5Corpus().process_and_save('phi5_complete_new.pickle.bz2', authorial=True, shuffle=False)
+	PHI5Corpus().process_and_save('phi5_new.pickle.bz2', authorial=True, shuffle=False, exclude=JUSTINIAN)
 
 def main_run_probability(): # NO LONGER USED
 	input()

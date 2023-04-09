@@ -10,7 +10,7 @@ from cltk.prosody.latin.scansion_constants import ScansionConstants
 import sys
 from pathlib import Path
 # Change the following line to point to wherever Alatius's macronizer is installed
-sys.path.insert(1, str(Path.cwd()/'latin-macronizer'))
+sys.path.insert(1, str(Path(__file__).parent/'latin-macronizer'))
 from macronizer import Macronizer
 
 from tqdm import tqdm # Progress bars are nice

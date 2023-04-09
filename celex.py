@@ -5,7 +5,11 @@ from math import log2
 from itertools import product
 import random
 
-from tqdm import tqdm
+import sys
+if 'ipykernel' in sys.modules:
+	from tqdm.notebook import tqdm
+else:
+	from tqdm import tqdm
 
 from analyze import Analysis
 
