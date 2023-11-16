@@ -1,0 +1,30 @@
+Corpus Scriptorum Latinorum: index with dates and links
+	Scrape this for dates, check which links go to scrapable sites
+	http://www.forumromanum.org/literature/authors_a.html
+	Note: other indices (title, genre, date) not functional
+	Also includes Classical authors
+
+The Latin Library: sources in basically plain text
+	No dates or metadata beyond author name and title
+	http://www.thelatinlibrary.com/neo.html
+	CSL has links to relevant works: see how much that hits?
+	Classical authors in a different section
+
+Perseus collections: various sources, theoretically in annotated XML
+	Example: http://www.perseus.tufts.edu/hopper/xmlchunk?doc=Perseus%3Atext%3A2011.01.0162%3Asection%3D1
+	Italian Poetry in Latin collection: http://www.perseus.tufts.edu/hopper/collection?collection=Perseus:collection:PDILL
+
+Centre for the Study of the Renaissance: links to various collections
+	https://warwick.ac.uk/fac/arts/ren/snls/neolatintexts/
+
+CAMENA corpus: various works between 1500 and 1800 in machine-readable XML
+	https://github.com/nevenjovanovic/camena-neolatinlit
+	50,458,045 tokens
+
+Birmingham Library of Humanistic Texts: plain HTML collection of works
+	https://philological.cal.bham.ac.uk/library.html
+	Requires following several links per work: scrapable?
+
+Croatian database: database of works from Croatia
+	Searchable, may be hard to scrape
+	http://www.ffzg.unizg.hr/klafil/dokuwiki/doku.php/z:croala-index-auctorum

@@ -58,6 +58,7 @@ class Processor:
 	def clean(self, word):
 		voiceless = f'([ptcqsf{KW}])'
 		vowel = '([aeiouyāēīōūȳ])'
+		consonant = '([^aeiouyāēīōūȳ])'
 		prefix = '(ambi|ante|co|contra|contrā|de|dē|di|dī|ē|ex|extra|extrā|extro|infra|īnfrā|intro|intrō|iuxta|juxtā|ne|nē|prae|pre|pro|prō|quasi|re|rē|retro|retrō|se|sē|sine|supra|suprā|tra|trā|ultra|ultrā)' # Generated automatically from CLTK's "scansion constants" - prefixes ending in vowels
 		# Note: specifically removed 'e' because it hit 'ejus' and such
 		# ējiciō and such have a long ē so that should be fine
@@ -76,10 +77,11 @@ class Processor:
 		word = re.sub(f'd{voiceless}', r't\1', word) # d → t / _ voiceless
 		# Presumably g → c / _ voiceless too, but this never happens
 		# (as before s it's written x, and no prefix ends in g)
-		word = re.sub('qu', f'{KW}', word) # represent kʷ as one letter
-		word = re.sub(f'ngu{vowel}', fr'n{GW}\1', word) # likewise
+		word = re.sub('q[uv]', f'{KW}', word) # represent kʷ as one letter
+		word = re.sub(f'ng[uv]{vowel}', fr'n{GW}\1', word) # likewise
 		word = re.sub(f'{KW}u', 'cu', word) # kʷ → k / _ u
 		word = re.sub(f'{GW}u', 'gu', word) # gʷ → g / _ u
+		word = re.sub(f'av{consonant}', r'au\1', word) # Sometimes aut etc written as avt in corpus; fix that here
 		word = re.sub('x', 'cs', word) # represent sequence ks as cs
 		word = re.sub('k', 'c', word) # both represent voiceless velar stop
 		word = re.sub(f'{vowel}j{vowel}', r'\1jj\2', word) # intervocalic j double
