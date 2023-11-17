@@ -8,7 +8,7 @@ sys.path.insert(1, '../../../CLTK/cltk/')
 
 from process import Processor, VALID
 from diasimify import LatinWord, Corpus, Lemma
-import undiasimify # needed for unpickling
+from undiasimify import orthographize
 
 class Frenchifier:
 	def __init__(self, corpus, era='Input'):
@@ -24,27 +24,31 @@ class Frenchifier:
 		ipa = LatinWord(syls).output()
 		return re.sub(' ', '', ipa) # Remove spaces; this is the best way
 	
-	def convert_word(self, word):
+	def convert_word(self, word, ortho=False):
 		# word should match \w+
 		ipa = self.ipaify(word)
 		if ipa is None: return word
 		if ipa not in self.corpus.reflexes:
 			raise KeyError(word, ipa)
+		if ortho:
+			return ''.join(orthographize(self.corpus.reflexes[ipa][self.era].output(sep='')))
 		return self.corpus.reflexes[ipa][self.era].output(sep='.') # Standard syllable delimiter
 	
-	def convert_text(self, text, era=None):
+	def convert_text(self, text, era=None, ortho=False):
 		if era: self.era = era
 		text = self.proc.macronize(text)
 		units = re.split(r'([a-zA-ZāēīōūȳĀĒĪŌŪȲ]+)', text)
 		res = []
 	#	print(units)
 		for i, unit in enumerate(tqdm(units)):
-			if i%2: unit = self.convert_word(unit) # With re.split, odd-numbered units are matches, even-numbered units are in-betweens (potentially including empty strings to make the numbers line up)
+			if i%2: unit = self.convert_word(unit, ortho) # With re.split, odd-numbered units are matches, even-numbered units are in-betweens (potentially including empty strings to make the numbers line up)
 			res.append(unit)
 		return ''.join(res)
 	
 	def convert_text_multi(self, text):
-		return { era:self.convert_text(text, era) for era in self.corpus.eras }
+		d = { era:self.convert_text(text, era) for era in self.corpus.eras }
+		d['French Ortho'] = self.convert_text(text, 'Output {GOLD}', True)
+		return d
 	
 	def convert_file(self, fn):
 		with open(fn, 'r') as f:
